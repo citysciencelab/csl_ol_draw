@@ -1,0 +1,44 @@
+<div id="olMap" class="map"></div>
+<!--
+<div>
+  <label>Interaction type: &nbsp;</label>
+  <mat-radio-group [(ngModel)]="selectedInteraction" class="radio-group" (change)="toolSelect($event)">
+    <mat-radio-button class="radio-button" *ngFor="let interaction of interactions" [value]="interaction" >
+      {{interaction}}
+    </mat-radio-button>
+  </mat-radio-group>
+</div>
+-->
+<div>
+  <label>Geometry type</label>
+  <mat-form-field>
+    <mat-select id="draw_options" [(ngModel)]="selectedDrawOption" (change)="toolSelect($event)" >
+      <mat-option *ngFor="let option of drawOptions; let i = index" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div>
+  <label>Building type</label>
+  <mat-form-field>
+    <mat-select [(ngModel)]="selectedAreaType" (change)="areaTypeSelect($event)" >
+      <mat-option *ngFor="let category of areaCategories; let i = index" [value]="category">
+        {{category}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<div id="delete" style="text-decoration:underline;cursor:pointer" (click)="clearMap()">
+  Delete all features
+</div>
+<div id="save" style="text-decoration:underline;cursor:pointer" (click)="saveData()">
+  Save data
+</div>
+
+<div *ngFor="let areasum of areaSumMap  | mapToIterable">
+Bereits bebaute {{areasum.key}}-Fläche:  <span [innerHTML]="getFormattedArea(areasum.val)"></span>
+</div>
+
+<label>Data:</label>
+<textarea id="data" rows="12" style="width:100%">{{savedData}}</textarea>
