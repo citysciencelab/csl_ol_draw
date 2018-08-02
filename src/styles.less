@@ -1,1 +1,75 @@
-/* You can add global styles to this file, and also import other style files */
+
+body {
+  color: #777;
+  font-family: 'Pathway Gothic One', sans-serif !important;
+  font-size: 1.2rem;
+
+  position: relative;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  a {
+    color: #777 !important;
+  }
+}
+
+body {
+}
+
+body #splash .content::before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  //So gehts
+  //background: -webkit-gradient(linear, left top, left bottom, from(rgba(226, 226, 226, 0)), color-stop(8%, rgba(50, 50, 50, 0)), to(rgba(0, 0, 0, 0.95)));
+  //background: linear-gradient(to bottom, rgba(226, 226, 226, 0) 0%, rgba(50, 50, 50, 0) 8%, rgba(0, 0, 0, 0.95) 100%);
+
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(226, 226, 226, 0.5)), color-stop(10%, rgba(50, 50, 50, 0.3)), to(rgba(20, 27, 46, 1)));
+  background: linear-gradient(to bottom, rgba(226, 226, 226, 0) 0%, rgba(50, 50, 50, 0.3) 10%, rgba(20, 27, 46, 1) 100%);
+
+  //background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(20, 27, 46, 0.5)), to(#141b2e));
+  //background: -webkit-linear-gradient(top, rgba(20, 27, 46, 0.5) 0%,rgba(20, 27, 46, 0.3) 10%,rgba(20, 27, 46, 0.5) 50%,#141b2e 100%);
+  //background: -moz-linear-gradient(top, rgba(20, 27, 46, 0.5) 0%,rgba(20, 27, 46, 0.3) 10%,rgba(20, 27, 46, 0.5) 50%,#141b2e 100%);
+  //background: -ms-linear-gradient(top, rgba(20, 27, 46, 0.5) 0%,rgba(20, 27, 46, 0.3) 10%,rgba(20, 27, 46, 0.5) 50%,#141b2e 100%);
+  //background: -o-linear-gradient(top, rgba(20, 27, 46, 0.5) 0%,rgba(20, 27, 46, 0.3) 10%,rgba(20, 27, 46, 0.5) 50%,#141b2e 100%);
+  //-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='rgba(20, 27, 46, 0.5)', EndColorStr='#141b2e')";
+}
+
+.transparent_holder:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.transparent_holder {
+  cursor: pointer;
+  position: relative;
+  height: 150px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+
+  -webkit-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.5);
+
+  .holder_content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 20px;
+    padding-left: 15px;
+  }
+
+  p {
+    font-weight: bold;
+    color: white;
+    padding-top: 10px;
+    text-align: left;
+    margin-bottom: 0;
+  }
+}

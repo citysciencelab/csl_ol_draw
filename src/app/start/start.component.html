@@ -1,0 +1,100 @@
+<div class="bound">
+  <div id="splash">
+    <div id="splash-image"></div>
+    <div class="content" (click)="startTool()">
+
+      <div class="row headline-row h-20 my-auto" style="width: 100%;" [@topicStart]="slideState">
+        <div class="col-md-12 sub-headline" style="margin-bottom: 50px">
+          Bitte wählen Sie die Flächenaufteiung Ihres Planungsgebietes
+        </div>
+        <div class="col-md-12">
+          <div class="row justify-content-center slider_holder">
+            <div class="col-md-6 transparent_holder living" style="height: 80px">
+              <p>Wohnen</p>
+              <mat-slider
+                style="width: 450px"
+                class="example-margin"
+                [max]="1000"
+                [min]="10"
+                [step]="10"
+                [thumbLabel]="true"
+                [(ngModel)]="sliderValueLiving">
+              </mat-slider>
+            </div>
+          </div>
+          <div class="row justify-content-center slider_holder">
+            <div class="col-md-6 transparent_holder working" style="height: 80px">
+              <p>Gewerbe</p>
+              <mat-slider
+                style="width: 450px"
+                class="example-margin"
+                [max]="1000"
+                [min]="10"
+                [step]="10"
+                [thumbLabel]="true"
+                [(ngModel)]="sliderValueWorking">
+              </mat-slider>
+            </div>
+          </div>
+          <div class="row justify-content-center slider_holder">
+            <div class="col-md-6 transparent_holder industry" style="height: 80px">
+              <p>Industrie</p>
+              <mat-slider
+                style="width: 450px"
+                class="example-margin"
+                [max]="1000"
+                [min]="10"
+                [step]="10"
+                [thumbLabel]="true"
+                [(ngModel)]="sliderValueIndustry">
+              </mat-slider>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="row justify-content-center">
+            <div class="col-md-1">
+              <div class="transparent_holder button"
+                   routerLink="/draw">
+                <p style="text-align: center">start</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row headline-row h-20 my-auto" style="width: 100%;">
+        <div class="col-md-12">
+          <div class="row justify-content-center">
+            <div class="col-md-2" (click)="startTopic('grassbrook')" [@showTopic]="topicState">
+              <div class="transparent_holder">
+                <div class="holder_content">
+                  <p>Grassbrook</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2" (click)="startTopic('free')" [@showTopic]="topicState">
+              <div class="transparent_holder">
+                <div class="holder_content">
+                  <p>Fläche wählen</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row headline-row h-20 my-auto"
+           [@menuStart]="menuState">
+        <div class="col-md-12 headline">
+          CityScienceLab
+        </div>
+        <div class="col-md-12 sub-headline">
+          Grasbrook Flächenplanung
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

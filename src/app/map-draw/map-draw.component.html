@@ -1,28 +1,30 @@
 <div id="olMap" class="map"></div>
-<!--
+
 <div>
-  <label>Interaction type: &nbsp;</label>
-  <mat-radio-group [(ngModel)]="selectedInteraction" class="radio-group" (change)="toolSelect($event)">
-    <mat-radio-button class="radio-button" *ngFor="let interaction of interactions" [value]="interaction" >
-      {{interaction}}
-    </mat-radio-button>
-  </mat-radio-group>
-</div>
--->
-<div>
-  <label>Geometry type</label>
+  <label>Interaction type: </label>
   <mat-form-field>
-    <mat-select id="draw_options" [(ngModel)]="selectedDrawOption" (change)="toolSelect($event)" >
+    <mat-select [(ngModel)]="selectedInteraction" (change)="interactionSelect($event)" >
+      <mat-option *ngFor="let action of interactions; let i = index" [value]="action">
+        {{action}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div *ngIf="selectedInteraction == 'Draw'">
+  <label>Geometry type: </label>
+  <mat-form-field>
+    <mat-select [(ngModel)]="selectedDrawOption" (change)="geometrySelect($event)" >
       <mat-option *ngFor="let option of drawOptions; let i = index" [value]="option">
         {{option}}
       </mat-option>
     </mat-select>
   </mat-form-field>
 </div>
-<div>
-  <label>Building type</label>
+<div *ngIf="selectedInteraction == 'Draw'">
+  <label>Building type: </label>
   <mat-form-field>
-    <mat-select [(ngModel)]="selectedAreaType" (change)="areaTypeSelect($event)" >
+    <mat-select [(ngModel)]="selectedAreaType" (change)="geometrySelect($event)" >
       <mat-option *ngFor="let category of areaCategories; let i = index" [value]="category">
         {{category}}
       </mat-option>

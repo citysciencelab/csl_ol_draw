@@ -6,6 +6,8 @@ import GeoJSON from 'ol/Format/GeoJSON.js';
 import {Style, Fill, Stroke, Circle} from 'ol/Style.js';
 import Draw from 'ol/interaction/Draw.js';
 import Modify from 'ol/interaction/Modify.js';
+import Move from 'ol/interaction/DragAndDrop.js';
+import Translate from 'ol/interaction/Translate.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import {OSM, Vector as VectorSource} from 'ol/source.js';
 import Overlay from 'ol/Overlay.js';
@@ -15,7 +17,7 @@ import {LineString, Polygon} from 'ol/geom.js';
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
 
-import * as ol from 'ol';
+// import * as ol from 'ol';
 import proj4 from 'proj4';
 
 @Component({
@@ -25,20 +27,19 @@ import proj4 from 'proj4';
 })
 export class MapDrawComponent implements OnInit {
 
-  map: ol.Map = undefined;
+  map: Map = undefined;
   mapId: string;
   mapView;
   source = null;
   initialZoom = 16;
   savedData = '';
 
-  interacting = null;
-  drawing = null;
+  interaction = null;
 
   selectedDrawOption = 'Polygon';
-  selectedInteraction = 'draw';
   drawOptions = ['Point', 'LineString', 'Polygon', 'Circle', 'None'];
-  interactions: string[] = ['draw', 'modify'];
+  selectedInteraction = 'Draw';
+  interactions = ['Draw', 'Modify', 'Delete', 'Move'];
   selectedAreaType = 'Gewerbe';
   areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
 
@@ -50,6 +51,9 @@ export class MapDrawComponent implements OnInit {
   listener;
   measureTooltipElement;
   measureTooltip;
+
+  deleteEvent;
+  moveEvent;
 
   constructor(private zone: NgZone) {
     this.mapId = 'olMap';
@@ -88,7 +92,8 @@ export class MapDrawComponent implements OnInit {
       view: this.mapView
     });
 
-    this.addInitialInteraction();
+    this.selectedInteraction = 'Draw';
+    this.addDrawInteraction();
   }
 
   private createAreaLayer(areaName: string, colorSheme: string[]) {
@@ -119,57 +124,95 @@ export class MapDrawComponent implements OnInit {
     return vector;
   }
 
-  areaTypeSelect($event: any) {
-    this.resetAndCreateDrawing();
-  }
 
-  toolSelect($event: any) {
+  /*
+  *   Interaction setting
+  */
+
+  interactionSelect($event: any) {
     let value = $event.value;
     let selectId = $event.source.id;
-    if (selectId == 'draw_options') {
-      this.resetAndCreateDrawing();
-    } else {
-      if (this.interacting) {
-        this.map.removeInteraction(this.interacting);
-      }
 
-      let interact = new Modify({
-        source: this.source,
-        type: value
-      });
-      this.map.addInteraction(interact);
-      this.interacting = interact;
+    if (this.interaction) {
+      this.map.removeInteraction(this.interaction);
+    }
+
+    if (this.moveEvent) {
+      this.map.un('singleclick', this.mapDragHandler);
+    } else if (this.deleteEvent) {
+      this.map.un('singleclick', this.mapClickHandler);
+    }
+
+    if (value == 'Draw') {
+      this.addDrawInteraction();
+    } else if (value == 'Modify') {
+      this.addModifyInteraction();
+    } else if (value == 'Move') {
+      this.addMoveInteraction();
+    } else if (value == 'Delete') {
+      this.addDeleteInteraction();
     }
   }
 
-  private resetAndCreateDrawing() {
-    if (this.drawing) {
-      this.map.removeInteraction(this.drawing);
+  geometrySelect($event: any) {
+    if (this.interaction) {
+      this.map.removeInteraction(this.interaction);
     }
     let draw = new Draw({
       source: this.areaToSourceMap[this.selectedAreaType],
       type: this.selectedDrawOption
     });
     this.map.addInteraction(draw);
-    this.drawing = draw;
+    this.interaction = draw;
     this.createTooltipAndInteractions(draw);
   }
 
-  addInitialInteraction() {
-    let draw = new Draw({
-      source: this.areaToSourceMap[this.selectedAreaType],
-      type: 'Polygon'
-    });
-    this.map.addInteraction(draw);
-    this.drawing = draw;
-    this.createTooltipAndInteractions(draw);
+  addDeleteInteraction() {
+    this.deleteEvent = this.map.on('singleclick', this.mapClickHandler);
+  }
 
+  mapClickHandler = (evt) => {
+    let features = evt.map.getFeaturesAtPixel(evt.pixel);
+    if (features && features.length > 0) {
+      let src:VectorSource = this.areaToSourceMap[this.selectedAreaType];
+      for (let feat of features) {
+        src.removeFeature(feat);
+      }
+    }
+  }
+
+  addMoveInteraction() {
+    this.moveEvent = this.map.on('singleclick', this.mapDragHandler);
+  }
+
+  mapDragHandler = (evt) => {
+    let features = evt.map.getFeaturesAtPixel(evt.pixel);
+    if (features && features.length > 0) {
+      let interact = new Translate({
+        source: this.areaToSourceMap[this.selectedAreaType],
+        target: features[0]
+      });
+      this.map.addInteraction(interact);
+      this.interaction = interact;
+    }
+  }
+
+  addModifyInteraction() {
     let interact = new Modify({
-      source: this.areaToSourceMap[this.selectedAreaType],
-      type: 'modify'
+      source: this.areaToSourceMap[this.selectedAreaType]
     });
     this.map.addInteraction(interact);
-    this.interacting = interact;
+    this.interaction = interact;
+  }
+
+  addDrawInteraction() {
+    let draw = new Draw({
+      source: this.areaToSourceMap[this.selectedAreaType],
+      type: this.selectedDrawOption
+    });
+    this.map.addInteraction(draw);
+    this.interaction = draw;
+    this.createTooltipAndInteractions(draw);
   }
 
   /*
@@ -232,8 +275,13 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
+
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
+    // Removing the tooltip
+    let staticToolTip = document.getElementsByClassName('tooltip-static')[0];
+    staticToolTip.parentNode.removeChild(staticToolTip);
+
     // unset sketch
     this.sketch = null;
     // unset tooltip so that a new one can be created

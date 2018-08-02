@@ -3,19 +3,21 @@ import {NgModule } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-import {MatRadioModule, MatSelectModule} from '@angular/material';
+import {MatRadioModule, MatSelectModule, MatSliderModule, MatSnackBar} from '@angular/material';
 
 import {AppComponent } from './app.component';
 import {MapDrawComponent } from './map-draw/map-draw.component';
 import {AppRoutingModule} from "./app-routing.module";
 import {MapToIterable} from "./pipes/MapToIterable";
+import { StartComponent } from './start/start.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MapDrawComponent,
-    MapToIterable
+    MapToIterable,
+    StartComponent
   ],
   imports: [
     BrowserModule,
@@ -23,6 +25,7 @@ import {MapToIterable} from "./pipes/MapToIterable";
     AppRoutingModule,
     MatSelectModule,
     MatRadioModule,
+    MatSliderModule,
     FormsModule
   ],
   providers: [],
