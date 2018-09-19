@@ -1,4 +1,8 @@
 .bound {
+
+  position: relative;
+  overflow: hidden;
+
   .gradient {
     width: 100%;
     height: 80%;
@@ -46,126 +50,120 @@
     cursor: pointer;
   }
 
-
-  .bound {
+  #splash {
     position: relative;
+    height: 100vh;
+    width: 100vw;
     overflow: hidden;
 
-    #splash {
+    #splash-image {
+      background-image: url(/assets/images/background/chuttersnap-255210-unsplash.jpg);
+
+      position: absolute;
+      height: 100%;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      width: 100%;
+      background-position: center center;
+      background-repeat: no-repeat;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      z-index: 0;
+    }
+
+    .content {
+      -webkit-justify-content: center;
+      -moz-justify-content: center;
+      justify-content: center;
+      -ms-flex-pack: center;
+      flex-pack: center;
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      -moz-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+      -webkit-justify-content: flex-end;
+      -moz-justify-content: flex-end;
+      justify-content: flex-end;
+      -ms-flex-pack: end;
+      flex-pack: end;
+      -webkit-align-items: center;
+      align-items: center;
+      -ms-flex-align: center;
+      flex-align: center;
+      -moz-transition: opacity 0.5s;
+      -o-transition: opacity 0.5s;
+      -webkit-transition: opacity 0.5s;
+      transition: opacity 0.5s;
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+      margin: 0;
+      padding: 50px 0;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      z-index: 1;
       position: relative;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
 
-      #splash-image {
-        background-image: url(/assets/images/background/chuttersnap-255210-unsplash.jpg);
+      .headline-row {
+        text-align: center;
+        color: whitesmoke;
+        //margin-top: 250px;
 
-        position: absolute;
-        height: 100%;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        width: 100%;
-        background-position: center center;
-        background-repeat: no-repeat;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-        z-index: 0;
-      }
+        .headline {
+          //height: 100px;
+          font-size: 50pt;
+          text-shadow: 0 2px 12px black;
+        }
 
-      .content {
-        -webkit-justify-content: center;
-        -moz-justify-content: center;
-        justify-content: center;
-        -ms-flex-pack: center;
-        flex-pack: center;
-        display: -webkit-box;
-        display: -moz-box;
-        display: -ms-flexbox;
-        display: -webkit-flex;
-        display: flex;
-        -webkit-flex-direction: column;
-        -moz-flex-direction: column;
-        -ms-flex-direction: column;
-        flex-direction: column;
-        -webkit-justify-content: flex-end;
-        -moz-justify-content: flex-end;
-        justify-content: flex-end;
-        -ms-flex-pack: end;
-        flex-pack: end;
-        -webkit-align-items: center;
-        align-items: center;
-        -ms-flex-align: center;
-        flex-align: center;
-        -moz-transition: opacity 0.5s;
-        -o-transition: opacity 0.5s;
-        -webkit-transition: opacity 0.5s;
-        transition: opacity 0.5s;
-        width: 100%;
-        height: 100%;
-        opacity: 1;
-        margin: 0;
-        padding: 50px 0;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        z-index: 1;
-        position: relative;
+        .sub-headline {
+          font-size: 1.5rem;
+          font-weight: 100;
+        }
 
-        .headline-row {
-          text-align: center;
-          color: whitesmoke;
-          //margin-top: 250px;
+        .topics-row {
+          margin-top: 60px;
 
-          .headline {
-            //height: 100px;
-            font-size: 50pt;
-            text-shadow: 0 2px 12px black;
-          }
+          .topics {
+            cursor: pointer;
+            width: 120px;
 
-          .sub-headline {
-            font-size: 1.5rem;
-            font-weight: 100;
-          }
-
-          .topics-row {
-            margin-top: 60px;
-
-            .topics {
-              cursor: pointer;
-              width: 120px;
-
-              .topic-text {
-                margin-top: 5px;
-              }
+            .topic-text {
+              margin-top: 5px;
             }
           }
         }
-
-        .top-counter {
-          font-size: 15pt;
-          //height: 40px;
-          width: 300px;
-          position: relative;
-          color: white;
-          margin-top: 20px;
-          padding-top: 3px;
-
-          .head {
-            cursor: pointer;
-            font-size: 1rem;
-          }
-
-          .count {
-            cursor: pointer;
-            font-size: 35pt;
-          }
-        }
       }
 
+      .top-counter {
+        font-size: 15pt;
+        //height: 40px;
+        width: 300px;
+        position: relative;
+        color: white;
+        margin-top: 20px;
+        padding-top: 3px;
+
+        .head {
+          cursor: pointer;
+          font-size: 1rem;
+        }
+
+        .count {
+          cursor: pointer;
+          font-size: 35pt;
+        }
+      }
     }
+
   }
 }

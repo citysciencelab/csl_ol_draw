@@ -22,7 +22,8 @@
         "styles.less",
         "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
         "../node_modules/bootstrap/dist/css/bootstrap.css",
-        "../node_modules/ol/ol.css"
+        "../node_modules/ol/ol.css",
+        "assets/css/highcharts-dark-unica.less"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

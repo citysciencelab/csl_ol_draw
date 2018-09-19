@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
+import {LocalStorageService} from "../local-storage/local-storage.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-start',
@@ -36,21 +39,35 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 })
 export class StartComponent implements OnInit {
 
+  @Output() toolStart = new EventEmitter<string>();
+
   isStarted = false;
   menuState = 'active';
   topicState = 'inactive';
   slideState = 'noSelect';
-  sliderValueLiving = 650;
+  sliderValueLiving = 500;
   sliderValueWorking = 500;
-  sliderValueIndustry = 350;
+  sliderValueIndustry = 500;
 
-  constructor() { }
+  constructor(private localStorageService: LocalStorageService,
+              private router: Router) { }
+
+  ngOnInit() {
+  }
 
   startTool() {
     if (!this.isStarted) {
       this.isStarted = true;
       this.menuState = 'inactive';
       this.topicState = 'active';
+
+      const message: LocalStorageMessage = {
+        type: 'tool-interaction',
+        data: { name: 'tool-start' }
+      };
+      this.localStorageService.sendMessage(message);
+      this.toolStart.emit('tool-start');
+
     }
   }
 
@@ -59,7 +76,15 @@ export class StartComponent implements OnInit {
     this.slideState = 'isSelected';
   }
 
-  ngOnInit() {
+  setGoalsAndForward() {
+    const message2: LocalStorageMessage = {
+      type: 'tool-select-goals',
+      data: { values: [this.sliderValueLiving, this.sliderValueWorking, this.sliderValueIndustry] }
+    };
+    this.localStorageService.sendMessage(message2);
+    this.toolStart.emit('tool-select-goals');
+
+    this.router.navigate(['/draw']);
   }
 
 }

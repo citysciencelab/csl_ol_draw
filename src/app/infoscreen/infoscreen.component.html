@@ -1,0 +1,26 @@
+<div class=" infoscreen">
+  <div class="row">
+
+    <!--Startscreen-->
+    <div *ngIf="!isToolStarted"
+         class="col-md-12 col-sm-12 headline">
+      <h1>Planungstool Flächenverteilung</h1>
+      <br><br>
+      <h4>Bitte tippen Sie zum Starten der Anwendung.</h4>
+    </div>
+
+    <!--Charts after start-->
+    <div *ngIf="isToolStarted"
+         class="col-md-12 col-sm-12 headline">
+      <h1>Aktuell gewählte Flächenverteilung</h1>
+    </div>
+
+    <div *ngIf="isToolStarted"
+         class="col-md-6 col-sm-12">
+      <div class="shadow-element holder-element">
+          <dash-spider [series]="spiderData"></dash-spider>
+      </div>
+    </div>
+
+  </div>
+</div>
