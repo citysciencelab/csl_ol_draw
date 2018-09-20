@@ -1,4 +1,16 @@
-<div id="olMap" class="map"></div>
+<div>
+  <div class="circle-menu-holder" style="position: absolute; top: 20px; left: 100px; z-index: 50">
+    <app-circle-menu></app-circle-menu>
+  </div>
+  <div class="resize_button ol-control">
+    <button (click)="goConfiguration()"
+            #infos="matTooltip" matTooltipPosition="left"
+            matTooltip="Zurück zur Flächenauswahl">
+      <i class="material-icons md-24">fullscreen_exit</i>
+    </button>
+  </div>
+  <div id="olMap" class="map"></div>
+</div>
 
 <div>
   <label>Interaction type: </label>

@@ -17,13 +17,17 @@ export class InfoscreenComponent implements OnInit {
 
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone) {
-    this.spiderData =
+    this.createAndUpdateSpiderData(null, null);
+  }
+
+  private createAndUpdateSpiderData(ist: number[], soll: number[]) {
+    return this.spiderData =
       [{
         name: 'Angestrebte Fläche in m²',
-        data: [500, 500, 500]
+        data: ist ? ist : [500, 500, 500]
       }, {
         name: 'Aktuelle Fläche in m²',
-        data: [0, 0, 0]
+        data: soll ? soll : [0, 0, 0]
       }];
   }
 
@@ -43,12 +47,7 @@ export class InfoscreenComponent implements OnInit {
       }
     } else if (message.type == 'tool-select-goals') {
       this.zone.run(() => {
-        let newData = Object.assign({}, this.spiderData);
-        newData[0]["data"] = message.data;
-        //TODO: Damit die changes detected werden, müssen wohl die beiden Dimensionen hadgecoded werden!
-        //TODO: SimpleChanges im SpiderChart kümmert sich dann um beides!
-        // ODERSO? https://stackoverflow.com/questions/42962394/angular-2-how-to-detect-changes-in-an-array-input-property
-
+        let newData = this.createAndUpdateSpiderData(message.data.values, this.spiderData[1]["data"]);
         this.spiderData = newData;
       });
     }

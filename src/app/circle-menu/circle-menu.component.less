@@ -1,0 +1,146 @@
+@turquoise: #1abc9c;
+@emerland: #2ecc71;
+@peter-river: #3498db;
+@amethyst: #9b59b6;
+@wet-asphalt: #34495e;
+@green-sea: #16a085;
+@nephritis: #27ae60;
+@belize-hole: #2980b9;
+@wisteria: #8e44ad;
+@midnight-blue: #2c3e50;
+@sun-flower: #f1c40f;
+@carrot: #e67e22;
+@alizarin: #e74c3c;
+@clouds: #ecf0f1;
+@concrete: #95a5a6;
+@orange: #f39c12;
+@pumpkin: #d35400;
+@pomegranate: #c0392b;
+@silver: #bdc3c7;
+@asbestos: #7f8c8d;
+
+@openlayers: rgba(0,60,136,0.5);
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+html {
+  font-family: "Open Sans", sans-serif;
+}
+
+h1 {
+  background-color: @openlayers;
+  padding: 1em;
+  box-sizing: border-box;
+  font-size: 2em;
+  color: white;
+  font-weight: 700;
+}
+
+nav.radial {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  @size: 3rem;
+  @radius: @size / 2;
+
+  position: relative;
+  top: @size * -0.5;
+
+  width: @size;
+  height: @size;
+  margin: 0 auto;
+
+  input {
+    display: none;
+  }
+
+  > label, > a {
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: @openlayers;
+    color: white;
+    text-align: center;
+    font-size: 0;
+    line-height: @size;
+  }
+
+  label:before, a:before {
+    font-size: @size * 0.4;
+    color: white;
+  }
+
+  a {
+    color: transparent;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  label {
+    border-radius: 0 0 @radius @radius;
+    cursor: pointer;
+    box-sizing: border-box;
+    border-bottom: @size/12 solid desaturate(darken(@openlayers, 10%),30%);
+    box-shadow: 0 @size/16 rgba(0,0,0,0.25);
+    transition: border-bottom 0.25s, box-shadow 0.5s;
+  }
+
+  input:checked ~ label {
+    border-bottom-width: 1px;
+    box-shadow: none;
+  }
+
+  .position(@index, @count) {
+    @distance: 1.6;
+    @min: 10deg;
+    @max: 180deg - @min;
+    @step: (180deg - @min * 2)/(@count - 1);
+    @i: @count - @index;
+    left: @size * cos(@step*@i+@min) * @distance;
+    top: @size * sin(@step*@i+@min) * @distance;
+
+  }
+
+  .hover-color(@hover-color) {
+    &:hover {
+      background-color: @hover-color;
+      border-bottom-color: desaturate(darken(@hover-color,10%),30%);
+    }
+  }
+
+  a[href] {
+    transition: top 0.1s, left 0.25s, opacity 1s, box-shadow 0.25s;
+    border-radius: @radius;
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    border-bottom: 1px solid #888;
+    box-sizing: border-box;
+
+    .hover-color(@turquoise);
+  }
+
+  input:checked ~ a[href] {
+    transition: top 1s, left 0.6s, box-shadow 1s, background-color 0.25s, border-bottom-color 0.25s, border-bottom-width 0.25s;
+    opacity: 1;
+  }
+
+  a[href]:hover {
+    border-bottom-width: @size/12;
+  }
+
+  input:checked ~ a[href]:nth-of-type(1),
+  input:checked ~ a[href]:nth-of-type(5) {
+    box-shadow: 0 -@size/16 @size/8 rgba(0,0,0,0.25);
+  }
+
+  input:checked ~ a[href]:nth-of-type(1) { .position(1,5); }
+  input:checked ~ a[href]:nth-of-type(2) { .position(2,5); }
+  input:checked ~ a[href]:nth-of-type(3) { .position(3,5); }
+  input:checked ~ a[href]:nth-of-type(4) { .position(4,5); }
+  input:checked ~ a[href]:nth-of-type(5) { .position(5,5); }
+}

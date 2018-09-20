@@ -92,19 +92,8 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
             y: 70,
             layout: 'vertical'
           },
-
           series: data
-
-          // series: [{
-          //   name: 'Angestrebte Fläche in m²',
-          //   data: [1300, 1900, 1000]
-          // }, {
-          //   name: 'Aktuelle Fläche in m²',
-          //   data: [0, 0, 0]
-          // }]
-
         });
-
     }
 
     public redrawChart(isReflow) {

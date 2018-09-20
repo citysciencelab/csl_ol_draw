@@ -1,4 +1,5 @@
 import {Component, OnInit, NgZone} from '@angular/core';
+import {Router} from "@angular/router";
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -55,7 +56,8 @@ export class MapDrawComponent implements OnInit {
   deleteEvent;
   moveEvent;
 
-  constructor(private zone: NgZone) {
+  constructor(private zone: NgZone,
+              private router: Router) {
     this.mapId = 'olMap';
   }
 
@@ -323,5 +325,15 @@ export class MapDrawComponent implements OnInit {
         ' ' + 'm<sup>2</sup>';
     }
     return output;
+  }
+
+
+  /*
+  *   Tooltip stuff
+  */
+
+  goConfiguration() {
+
+    this.router.navigate(['/start']);
   }
 }
