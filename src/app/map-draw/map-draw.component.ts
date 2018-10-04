@@ -17,9 +17,11 @@ import {LineString, Polygon} from 'ol/geom.js';
 
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
+import {toLonLat} from 'ol/proj.js';
 
-// import * as ol from 'ol';
 import proj4 from 'proj4';
+import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
+import {LocalStorageService} from "../local-storage/local-storage.service";
 
 @Component({
   selector: 'app-map-draw',
@@ -34,6 +36,7 @@ export class MapDrawComponent implements OnInit {
   source = null;
   initialZoom = 16;
   savedData = '';
+  dataFor3D = '';
 
   interaction = null;
 
@@ -56,7 +59,8 @@ export class MapDrawComponent implements OnInit {
   deleteEvent;
   moveEvent;
 
-  constructor(private zone: NgZone,
+  constructor(private localStorageService: LocalStorageService,
+              private zone: NgZone,
               private router: Router) {
     this.mapId = 'olMap';
   }
@@ -236,10 +240,41 @@ export class MapDrawComponent implements OnInit {
 
   saveData() {
     this.savedData = '';
+    let savedDataNew = {};
+    let tempData = [];
+    let format = new GeoJSON();
     for (let area of this.areaCategories) {
-      let format = new GeoJSON();
-      this.savedData += format.writeFeatures(this.areaToSourceMap[area].getFeatures())
+      // this.savedData += format.writeFeatures(this.areaToSourceMap[area].getFeatures())
+      for (let feature of this.areaToSourceMap[area].getFeatures()) {
+        tempData.push(feature);
+      }
     }
+
+
+
+    this.savedData = format.writeFeatures(tempData);
+    savedDataNew = JSON.parse(format.writeFeatures(tempData));
+    for (let feat of savedDataNew["features"]) {
+      for (let i = 0; i < feat["geometry"]["coordinates"][0].length; i++) {
+        let geom = feat["geometry"]["coordinates"][0][i];
+        console.log(geom)
+
+        console.log()
+
+        feat["geometry"]["coordinates"][0][i] = toLonLat(geom);
+        let prop = {isPart: false};
+        feat["properties"] = prop;
+      }
+    }
+
+    this.savedData = JSON.stringify(savedDataNew);
+
+
+    const message2: LocalStorageMessage = {
+      type: 'tool-new-buildings',
+      data: savedDataNew
+    };
+    this.localStorageService.sendMessage(message2);
   }
 
   /*

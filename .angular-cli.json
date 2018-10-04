@@ -25,7 +25,8 @@
         "../node_modules/ol/ol.css",
         "assets/css/highcharts-dark-unica.less"
       ],
-      "scripts": [],
+      "scripts": [
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
