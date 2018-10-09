@@ -16,6 +16,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   public isToolStarted = true;
   private spiderData;
   private osmb;
+  private gJson;
   private glMap;
 
   // NOT hard coded!
@@ -107,26 +108,25 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   createBuildingsLayer(jsonData) {
-    if (this.osmb) {
-      this.glMap.removeLayer(this.osmb);
-      this.osmb.destroy();
+    if (this.gJson) {
+      this.gJson.destroy();
     }
-    this.osmb = new OSMBuildings({
-      baseURL: './OSMBuildings',
-      minZoom: 15,
-      maxZoom: 22
-    }).addTo(this.glMap);
 
-    // TODO: Einfarbiger background oder transparent???
-    this.osmb.addMapTiles(
-      'http://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png'
-    );
+    if (!this.osmb) {
+      this.osmb = new OSMBuildings({
+        baseURL: './OSMBuildings',
+        minZoom: 15,
+        maxZoom: 22
+      }).addTo(this.glMap);
 
-    let dings = '{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[10.01198872288296,53.53368740580626],[10.01096352313834,53.53312058560661],[10.01096352313834,53.53312058560661],[10.01220329960415,53.53235536633815],[10.01198872288296,53.53368740580626]]]},"properties":{"isPart":false}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[10.013609970239484,53.53283717268587],[10.013109290350254,53.53187355441122],[10.013109290350254,53.53187355441122],[10.014301382954725,53.53178852835683],[10.01477822156812,53.53221365750548],[10.013609970239484,53.53283717268587]]]},"properties":{"isPart":false}},{"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[10.005527578661711,53.535118593306095],[10.005503737385878,53.53497689381777],[10.009723746672533,53.53399915398603],[10.010748946417149,53.53399915398603],[10.010868155415663,53.534438431145475],[10.005527578661711,53.535118593306095]]]},"properties":{"isPart":false}}]}'
-    if (jsonData)
-      this.osmb.addGeoJSON(jsonData);
+      this.osmb.addMapTiles(
+        'http://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png'
+      );
+    }
 
-
+    if (jsonData) {
+      this.gJson = this.osmb.addGeoJSON(jsonData);
+    }
   }
 
   addBuildingsToMap(jsonData) {
