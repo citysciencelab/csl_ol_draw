@@ -135,18 +135,31 @@ export class MapDrawComponent implements OnInit {
   *   Interaction setting
   */
 
+  /*
+  *   Selecting elements on a filter will also add a chip & recalculate values
+  */
+
+  interactionFromMenu = function (selection: Object) {
+    if (selection['action'] === 'DeleteAll') {
+      this.clearMap();
+    } else {
+      let newEventObject = [];
+      newEventObject['value'] = selection['action'];
+      this.interactionSelect(newEventObject);
+    }
+  };
+
   interactionSelect($event: any) {
     let value = $event.value;
-    let selectId = $event.source.id;
 
     if (this.interaction) {
       this.map.removeInteraction(this.interaction);
     }
 
     if (this.moveEvent) {
-      this.map.un('singleclick', this.mapDragHandler);
+      this.map.un('singleclick', this.mapMoveHandler);
     } else if (this.deleteEvent) {
-      this.map.un('singleclick', this.mapClickHandler);
+      this.map.un('singleclick', this.mapDeleteHandler);
     }
 
     if (value == 'Draw') {
@@ -174,10 +187,10 @@ export class MapDrawComponent implements OnInit {
   }
 
   addDeleteInteraction() {
-    this.deleteEvent = this.map.on('singleclick', this.mapClickHandler);
+    this.deleteEvent = this.map.on('singleclick', this.mapDeleteHandler);
   }
 
-  mapClickHandler = (evt) => {
+  mapDeleteHandler = (evt) => {
     let features = evt.map.getFeaturesAtPixel(evt.pixel);
     if (features && features.length > 0) {
       let src:VectorSource = this.areaToSourceMap[this.selectedAreaType];
@@ -185,13 +198,14 @@ export class MapDrawComponent implements OnInit {
         src.removeFeature(feat);
       }
     }
+    this.saveData();
   }
 
   addMoveInteraction() {
-    this.moveEvent = this.map.on('singleclick', this.mapDragHandler);
+    this.moveEvent = this.map.on('singleclick', this.mapMoveHandler);
   }
 
-  mapDragHandler = (evt) => {
+  mapMoveHandler = (evt) => {
     let features = evt.map.getFeaturesAtPixel(evt.pixel);
     if (features && features.length > 0) {
       let interact = new Translate({
@@ -201,6 +215,7 @@ export class MapDrawComponent implements OnInit {
       this.map.addInteraction(interact);
       this.interaction = interact;
     }
+    this.saveData();
   }
 
   addModifyInteraction() {
@@ -209,6 +224,7 @@ export class MapDrawComponent implements OnInit {
     });
     this.map.addInteraction(interact);
     this.interaction = interact;
+    // TODO: Hier noch einen Listener, der das Modify an die Map weitergibt ...
   }
 
   addDrawInteraction() {
@@ -236,9 +252,12 @@ export class MapDrawComponent implements OnInit {
       let obj = elements[i];
       obj.parentNode.removeChild(obj);
     }
+    this.saveData();
   }
 
   saveData() {
+    console.log("Saving data");
+
     this.savedData = '';
     let savedDataNew = {};
     let tempData = [];
@@ -250,17 +269,11 @@ export class MapDrawComponent implements OnInit {
       }
     }
 
-
-
     this.savedData = format.writeFeatures(tempData);
     savedDataNew = JSON.parse(format.writeFeatures(tempData));
     for (let feat of savedDataNew["features"]) {
       for (let i = 0; i < feat["geometry"]["coordinates"][0].length; i++) {
         let geom = feat["geometry"]["coordinates"][0][i];
-        console.log(geom)
-
-        console.log()
-
         feat["geometry"]["coordinates"][0][i] = toLonLat(geom);
         let prop = {isPart: false};
         feat["properties"] = prop;
@@ -268,7 +281,6 @@ export class MapDrawComponent implements OnInit {
     }
 
     this.savedData = JSON.stringify(savedDataNew);
-
 
     const message2: LocalStorageMessage = {
       type: 'tool-new-buildings',
@@ -325,6 +337,10 @@ export class MapDrawComponent implements OnInit {
     this.measureTooltipElement = null;
     this.createMeasureTooltip();
     unByKey(this.listener);
+
+    setTimeout(()=>{    //<<<---    using ()=> syntax
+      this.saveData();
+    }, 800);
   }
 
   sketchChangeHandler = (evt) => {
@@ -368,7 +384,6 @@ export class MapDrawComponent implements OnInit {
   */
 
   goConfiguration() {
-
     this.router.navigate(['/start']);
   }
 }

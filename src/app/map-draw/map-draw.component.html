@@ -1,6 +1,7 @@
 <div>
-  <div class="circle-menu-holder" style="position: absolute; top: 20px; left: 100px; z-index: 50">
-    <app-circle-menu></app-circle-menu>
+  <div class="circle-menu-holder" style="position: absolute; top: 20px; left: 150px; z-index: 50">
+    <app-circle-menu
+      (newSelection)="interactionFromMenu($event)"></app-circle-menu>
   </div>
   <div class="resize_button ol-control">
     <button (click)="goConfiguration()"
@@ -11,7 +12,7 @@
   </div>
   <div id="olMap" class="map"></div>
 </div>
-
+<!--
 <div>
   <label>Interaction type: </label>
   <mat-form-field>
@@ -42,17 +43,8 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-</div>
-<div id="delete" style="text-decoration:underline;cursor:pointer" (click)="clearMap()">
-  Delete all features
-</div>
-<div id="save" style="text-decoration:underline;cursor:pointer" (click)="saveData()">
-  Save data
-</div>
+</div>-->
 
 <div *ngFor="let areasum of areaSumMap  | mapToIterable">
 Bereits bebaute {{areasum.key}}-Fläche:  <span [innerHTML]="getFormattedArea(areasum.val)"></span>
 </div>
-
-<label>Data:</label>
-<textarea id="data" rows="12" style="width:100%">{{savedData}}</textarea>

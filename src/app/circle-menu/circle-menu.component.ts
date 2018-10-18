@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-circle-menu',
@@ -7,9 +7,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CircleMenuComponent implements OnInit {
 
+  @Output() newSelection = new EventEmitter<Object>();
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+  menuItemClick(interActionType: string, interActionValue: string) {
+    let selection: Object = [];
+    selection['action'] = interActionType;
+    selection['value'] = interActionValue;
+    this.newSelection.emit(selection);
   }
 
 }

@@ -19,6 +19,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   private gJson;
   private glMap;
 
+  savedData = '';
+
   // NOT hard coded!
   private areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
 
@@ -28,6 +30,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   private createAndUpdateSpiderData(ist: number[], soll: number[]) {
+    let dd =0;
     return this.spiderData =
       [{
         name: 'Angestrebte Fläche in m²',
@@ -125,6 +128,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     }
 
     if (jsonData) {
+      this.savedData = JSON.stringify(jsonData);
       this.gJson = this.osmb.addGeoJSON(jsonData);
     }
   }
