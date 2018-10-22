@@ -5,6 +5,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import {MatRadioModule, MatSelectModule, MatSliderModule, MatSnackBar, MatTooltipModule, MatIconModule} from '@angular/material';
 
+import {DragDropModule} from '@angular/cdk/drag-drop';
 import {AppComponent } from './app.component';
 import {MapDrawComponent } from './map-draw/map-draw.component';
 import {AppRoutingModule} from "./app-routing.module";
@@ -36,9 +37,10 @@ export function highchartsModules() {
     CircleMenuComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
+    DragDropModule,
     MatSelectModule,
     MatRadioModule,
     MatSliderModule,
@@ -46,6 +48,8 @@ export function highchartsModules() {
     MatIconModule,
     FormsModule,
     ChartModule
+  ],
+  exports: [
   ],
   providers: [
     LocalStorageService,

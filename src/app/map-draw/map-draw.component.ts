@@ -14,6 +14,7 @@ import {OSM, Vector as VectorSource} from 'ol/source.js';
 import Overlay from 'ol/Overlay.js';
 import {getArea, getLength} from 'ol/sphere.js';
 import {LineString, Polygon} from 'ol/geom.js';
+import {defaults as defaultControls, Control} from 'ol/control.js';
 
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
@@ -95,6 +96,9 @@ export class MapDrawComponent implements OnInit {
       layers: [
         raster, vectorGewerbe, vectorWohnen, vectorindustrie
       ],
+      controls : defaultControls({
+        zoom : false,
+      }),
       view: this.mapView
     });
 

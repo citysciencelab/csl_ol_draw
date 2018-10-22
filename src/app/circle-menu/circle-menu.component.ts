@@ -21,4 +21,9 @@ export class CircleMenuComponent implements OnInit {
     this.newSelection.emit(selection);
   }
 
+
+  /*
+      TODO: On Drag Start - den Mouse Release button unterdrücken!!!
+  */
+
 }
