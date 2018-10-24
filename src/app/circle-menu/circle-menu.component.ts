@@ -8,6 +8,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class CircleMenuComponent implements OnInit {
 
   @Output() newSelection = new EventEmitter<Object>();
+  isDragging = true;
 
   constructor() { }
 
@@ -21,9 +22,14 @@ export class CircleMenuComponent implements OnInit {
     this.newSelection.emit(selection);
   }
 
+  onDragStart(evt) {
+    this.isDragging = true;
+  }
 
-  /*
-      TODO: On Drag Start - den Mouse Release button unterdrücken!!!
-  */
+  onDragEnded(evt) {
+    setTimeout(()=>{    //<<<---    using ()=> syntax
+      this.isDragging = false;
+    }, 500);
+  }
 
 }

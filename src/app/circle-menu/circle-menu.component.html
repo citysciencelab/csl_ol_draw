@@ -1,5 +1,7 @@
-<nav class="radial" cdkDrag>
-  <input type="checkbox" id="menu" checked>
+<nav class="radial" cdkDrag
+     (cdkDragEnded)="onDragEnded($event)"
+     (cdkDragStarted)="onDragStart($event)">
+  <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
   <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')">
     <i class="material-icons menu-icons white">create</i>
   </a>
