@@ -51,8 +51,10 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   private initMap() {
+    let grassbrook = [10.013643732087715, 53.532553758257485];
+
     this.glMap = new GLMap('map', {
-      position: { latitude:53.532702, longitude:10.013888 },
+      position: { latitude: grassbrook[1], longitude: grassbrook[0]},
       zoom: 16,
       minZoom: 12,
       maxZoom: 20,
@@ -162,11 +164,9 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       this.zone.run(() => {
         this.addBuildingsToMap(message.data)
       });
-    } else if (message.type == 'tool-new-buildings-map') {
-      // // TODO: hieraus noch ein chart machen -- dashboard components eibinden...!!
-      // this.zone.run(() => {
-      //   this.areaSumMap = message.data;
-      // });
+    } else if (message.type == 'tool-new-map-position') {
+      console.log(message.data)
+      this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]}
     }
 
   }

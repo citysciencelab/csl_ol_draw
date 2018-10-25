@@ -120,8 +120,18 @@ export class MapDrawComponent implements OnInit {
       view: this.mapView
     });
 
+    this.map.on('pointerdrag', this.mapMoveEndHandler);
+
     this.selectedInteraction = 'Draw';
     this.addDrawInteraction();
+  }
+
+  mapMoveEndHandler = (evt) => {
+    const message2: LocalStorageMessage = {
+      type: 'tool-new-map-position',
+      data: toLonLat(this.mapView.get('center'))
+    };
+    this.localStorageService.sendMessage(message2);
   }
 
   private createAreaLayer(areaName: string, colorSheme: string[]) {
@@ -364,12 +374,6 @@ export class MapDrawComponent implements OnInit {
       data: savedDataNew
     };
     this.localStorageService.sendMessage(message2);
-    //
-    // const message3: LocalStorageMessage = {
-    //   type: 'tool-new-buildings-map',
-    //   data: this.areaToSourceMap
-    // };
-    // this.localStorageService.sendMessage(message3);
   }
 
   /*
