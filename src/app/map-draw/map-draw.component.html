@@ -1,5 +1,5 @@
-<div>
-  <div class="circle-menu-holder" style="position: absolute; top: 70px; left: 100px; z-index: 50">
+<div style="height: 100%">
+  <div class="circle-menu-holder">
     <app-circle-menu
       (newSelection)="interactionFromMenu($event)"></app-circle-menu>
   </div>
@@ -11,40 +11,4 @@
     </button>
   </div>
   <div id="olMap" class="map"></div>
-</div>
-<!--
-<div>
-  <label>Interaction type: </label>
-  <mat-form-field>
-    <mat-select [(ngModel)]="selectedInteraction" (change)="interactionSelect($event)" >
-      <mat-option *ngFor="let action of interactions; let i = index" [value]="action">
-        {{action}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-
-<div *ngIf="selectedInteraction == 'Draw'">
-  <label>Geometry type: </label>
-  <mat-form-field>
-    <mat-select [(ngModel)]="selectedDrawOption" (change)="geometrySelect($event)" >
-      <mat-option *ngFor="let option of drawOptions; let i = index" [value]="option">
-        {{option}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
-<div *ngIf="selectedInteraction == 'Draw'">
-  <label>Building type: </label>
-  <mat-form-field>
-    <mat-select [(ngModel)]="selectedAreaType" (change)="geometrySelect($event)" >
-      <mat-option *ngFor="let category of areaCategories; let i = index" [value]="category">
-        {{category}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>-->
-
-<div *ngFor="let areasum of areaSumMap  | mapToIterable">
-Bereits bebaute {{areasum.key}}-Fläche:  <span [innerHTML]="getFormattedArea(areasum.val)"></span>
 </div>

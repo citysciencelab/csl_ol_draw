@@ -19,6 +19,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   private gJson;
   private glMap;
 
+  areaSumMap = {};
   savedData = '';
 
   // NOT hard coded!
@@ -123,8 +124,11 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       }).addTo(this.glMap);
 
       this.osmb.addMapTiles(
-        'http://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png'
+        'http://{s}.basemaps.cartocdn.com/spotify_dark/{z}/{x}/{y}.png'
       );
+      // this.osmb.addMapTiles(
+      //   'http://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png'
+      // );
     }
 
     if (jsonData) {
@@ -154,10 +158,15 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
         let newData = this.createAndUpdateSpiderData(message.data.values, this.spiderData[1]["data"]);
         this.spiderData = newData;
       });
-    } else if (message.type == 'tool-new-buildings') {
+    } else if (message.type == 'tool-new-buildings-json') {
       this.zone.run(() => {
         this.addBuildingsToMap(message.data)
       });
+    } else if (message.type == 'tool-new-buildings-map') {
+      // // TODO: hieraus noch ein chart machen -- dashboard components eibinden...!!
+      // this.zone.run(() => {
+      //   this.areaSumMap = message.data;
+      // });
     }
 
   }

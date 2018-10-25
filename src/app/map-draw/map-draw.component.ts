@@ -5,6 +5,7 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import GeoJSON from 'ol/Format/GeoJSON.js';
 import {Style, Fill, Stroke, Circle} from 'ol/Style.js';
+import Select from 'ol/interaction/Select.js';
 import Draw from 'ol/interaction/Draw.js';
 import Modify from 'ol/interaction/Modify.js';
 import Move from 'ol/interaction/DragAndDrop.js';
@@ -15,6 +16,7 @@ import Overlay from 'ol/Overlay.js';
 import {getArea, getLength} from 'ol/sphere.js';
 import {LineString, Polygon} from 'ol/geom.js';
 import {defaults as defaultControls, Control} from 'ol/control.js';
+import {click} from 'ol/events/condition.js';
 
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
@@ -35,22 +37,22 @@ export class MapDrawComponent implements OnInit {
   mapId: string;
   mapView;
   source = null;
-  initialZoom = 16;
+  initialZoom = 17;
   savedData = '';
   dataFor3D = '';
 
   interaction = null;
 
   selectedDrawOption = 'Polygon';
-  drawOptions = ['Point', 'LineString', 'Polygon', 'Circle', 'None'];
+  // drawOptions = ['Point', 'LineString', 'Polygon', 'Circle', 'None'];
   selectedInteraction = 'Draw';
-  interactions = ['Draw', 'Modify', 'Delete', 'Move'];
+  interactionSpecifics = '';
+  // interactions = ['Draw', 'Modify', 'Delete', 'Move'];
   selectedAreaType = 'Gewerbe';
   areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
 
   areaToSourceMap = {};
   areaSumMap = {};
-  gewerbeFlaeche = 0;
 
   sketch;
   listener;
@@ -59,6 +61,12 @@ export class MapDrawComponent implements OnInit {
 
   deleteEvent;
   moveEvent;
+  selectControl;
+
+  livingStyle = {
+    fillColor: '#90ee90',
+    strokeColor: '#006400'
+  };
 
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone,
@@ -74,7 +82,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   initMap() {
-    let grassbrook = [10.003393732087716, 53.532553758257485];
+    let grassbrook = [10.013643732087715, 53.532553758257485];
 
     this.mapView = new View({
       center: fromLonLat(grassbrook),
@@ -149,6 +157,9 @@ export class MapDrawComponent implements OnInit {
     } else {
       let newEventObject = [];
       newEventObject['value'] = selection['action'];
+      if (selection['value']) {
+        this.interactionSpecifics = selection['value'];
+      }
       this.interactionSelect(newEventObject);
     }
   };
@@ -174,20 +185,41 @@ export class MapDrawComponent implements OnInit {
       this.addMoveInteraction();
     } else if (value == 'Delete') {
       this.addDeleteInteraction();
+    } else if (value == 'Select') {
+      this.addSelectInteraction();
     }
   }
 
-  geometrySelect($event: any) {
-    if (this.interaction) {
-      this.map.removeInteraction(this.interaction);
-    }
-    let draw = new Draw({
-      source: this.areaToSourceMap[this.selectedAreaType],
-      type: this.selectedDrawOption
+  addSelectInteraction() {
+    this.selectControl = new Select({
+      condition: click
     });
-    this.map.addInteraction(draw);
-    this.interaction = draw;
-    this.createTooltipAndInteractions(draw);
+    this.map.addInteraction(this.selectControl);
+    this.selectControl.on('select', this.mapSelectHandler);
+  }
+
+  mapSelectHandler = (evt) => {
+    let features = evt.selected;
+    if (features && features.length > 0) {
+      if (this.interactionSpecifics === "Type") {
+        //TODO: Die Source könnte auch anders sein! Muss eigentlich über dioe featureAtPixel geklärt werden
+        let src:VectorSource = this.areaToSourceMap[this.selectedAreaType];
+        let newSrc:VectorSource = this.areaToSourceMap["Wohnen"];
+        for (let feat of features) {
+          feat.set('color', this.livingStyle['fillColor']);
+          src.removeFeature(feat);
+          newSrc.addFeature(feat);
+        }
+        src.dispatchEvent('change');
+        newSrc.dispatchEvent('change');
+      } else if (this.interactionSpecifics === "Height") {
+        for (let feat of features) {
+          feat.set('height', '35');
+        }
+      }
+      this.selectControl.getFeatures().clear();
+    }
+    this.saveData();
   }
 
   addDeleteInteraction() {
@@ -279,18 +311,22 @@ export class MapDrawComponent implements OnInit {
       for (let i = 0; i < feat["geometry"]["coordinates"][0].length; i++) {
         let geom = feat["geometry"]["coordinates"][0][i];
         feat["geometry"]["coordinates"][0][i] = toLonLat(geom);
-        let prop = {isPart: false};
-        feat["properties"] = prop;
       }
     }
 
     this.savedData = JSON.stringify(savedDataNew);
 
     const message2: LocalStorageMessage = {
-      type: 'tool-new-buildings',
+      type: 'tool-new-buildings-json',
       data: savedDataNew
     };
     this.localStorageService.sendMessage(message2);
+    //
+    // const message3: LocalStorageMessage = {
+    //   type: 'tool-new-buildings-map',
+    //   data: this.areaToSourceMap
+    // };
+    // this.localStorageService.sendMessage(message3);
   }
 
   /*
@@ -328,7 +364,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
-
+    evt.feature.setProperties({isPart: false});
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
     // Removing the tooltip

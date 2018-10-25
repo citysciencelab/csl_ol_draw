@@ -45,6 +45,12 @@
     </div>
 
     <div class="col-md-12 col-sm-12" id="data-holder">
+      <div *ngFor="let areasum of areaSumMap  | mapToIterable">
+        Bereits bebaute {{areasum.key}}-Fläche:  <span [innerHTML]="getFormattedArea(areasum.val)"></span>
+      </div>
+    </div>
+
+    <div class="col-md-12 col-sm-12" id="json-holder">
       <label>Data:</label>
       <textarea id="data" rows="12" style="width:100%">{{savedData}}</textarea>
     </div>
