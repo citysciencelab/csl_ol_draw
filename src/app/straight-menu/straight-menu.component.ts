@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
   selector: 'app-straight-menu',
@@ -7,19 +7,18 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class StraightMenuComponent implements OnInit {
 
-  @Output() newSelection = new EventEmitter<Object>();
+  @Output() newSelection = new EventEmitter<string>();
   isDragging = false;
+  @Input() selectedType;
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  menuItemClick(interActionType: string, interActionValue: string) {
-    // let selection: Object = [];
-    // selection['action'] = interActionType;
-    // selection['value'] = interActionValue;
-    // this.newSelection.emit(selection);
+  setBuildingType(buildingType: string) {
+    this.newSelection.emit(buildingType);
+    this.selectedType = buildingType;
   }
 
   onDragStart(evt) {

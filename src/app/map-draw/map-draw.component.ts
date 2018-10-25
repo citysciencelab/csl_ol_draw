@@ -68,6 +68,16 @@ export class MapDrawComponent implements OnInit {
     strokeColor: '#006400'
   };
 
+  officeStyle = {
+    fillColor: '#add8e6',
+    strokeColor: '#0000ff'
+  };
+
+  industryStyle = {
+    fillColor: '#fafad2',
+    strokeColor: '#ffff00'
+  };
+
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone,
               private router: Router) {
@@ -89,9 +99,9 @@ export class MapDrawComponent implements OnInit {
       zoom: this.initialZoom
     });
 
-    let vectorWohnen = this.createAreaLayer('Wohnen', ['#90ee90', '#006400']);
-    let vectorGewerbe = this.createAreaLayer('Gewerbe', ['#add8e6', '#0000ff']);
-    let vectorindustrie = this.createAreaLayer('Industrie', ['#fafad2', '#ffff00']);
+    let vectorWohnen = this.createAreaLayer('Wohnen', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']]);
+    let vectorGewerbe = this.createAreaLayer('Gewerbe', [this.officeStyle['fillColor'], this.officeStyle['strokeColor']]);
+    let vectorindustrie = this.createAreaLayer('Industrie', [this.industryStyle['fillColor'], this.industryStyle['strokeColor']]);
 
     let raster = new TileLayer({
       source: new OSM({
@@ -104,8 +114,8 @@ export class MapDrawComponent implements OnInit {
       layers: [
         raster, vectorGewerbe, vectorWohnen, vectorindustrie
       ],
-      controls : defaultControls({
-        zoom : false,
+      controls: defaultControls({
+        zoom: false,
       }),
       view: this.mapView
     });
@@ -140,6 +150,15 @@ export class MapDrawComponent implements OnInit {
 
     this.areaToSourceMap[areaName] = source;
     return vector;
+  }
+
+
+  /*
+  *   Setting building type from menu
+  */
+
+  public setBuildingTpe(selection: string) {
+    this.selectedAreaType = selection;
   }
 
 
@@ -203,22 +222,24 @@ export class MapDrawComponent implements OnInit {
     let features = evt.selected;
     if (features && features.length > 0) {
       if (this.interactionSpecifics === "Type") {
-        //TODO: Die Source könnte auch anders sein! Muss eigentlich über dioe featureAtPixel geklärt werden
-        let src:VectorSource = this.areaToSourceMap[this.selectedAreaType];
-        let newSrc:VectorSource = this.areaToSourceMap["Wohnen"];
+
+        let newSrc: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+
         for (let feat of features) {
-          feat.set('color', this.livingStyle['fillColor']);
+          let currentType = feat.get("buildingType");
+          let src: VectorSource = this.areaToSourceMap[currentType];
+          feat.set(this.selectedAreaType);
           src.removeFeature(feat);
           newSrc.addFeature(feat);
+          src.dispatchEvent('change');
         }
-        src.dispatchEvent('change');
         newSrc.dispatchEvent('change');
       } else if (this.interactionSpecifics === "Height") {
         for (let feat of features) {
           let height = feat.get('height');
           if (height) {
             let newHeight = parseInt(height) + 35;
-            feat.set('height', newHeight+'');
+            feat.set('height', newHeight + '');
           } else {
             feat.set('height', '35');
           }
@@ -236,7 +257,7 @@ export class MapDrawComponent implements OnInit {
   mapDeleteHandler = (evt) => {
     let features = evt.map.getFeaturesAtPixel(evt.pixel);
     if (features && features.length > 0) {
-      let src:VectorSource = this.areaToSourceMap[this.selectedAreaType];
+      let src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
       for (let feat of features) {
         src.removeFeature(feat);
       }
@@ -375,7 +396,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
-    evt.feature.setProperties({isPart: false});
+    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType});
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
     // Removing the tooltip
@@ -389,7 +410,7 @@ export class MapDrawComponent implements OnInit {
     this.createMeasureTooltip();
     unByKey(this.listener);
 
-    setTimeout(()=>{    //<<<---    using ()=> syntax
+    setTimeout(() => {    //<<<---    using ()=> syntax
       this.saveData();
     }, 800);
   }
@@ -417,7 +438,7 @@ export class MapDrawComponent implements OnInit {
     return this.getFormattedArea(getArea(polygon));
   };
 
-  getFormattedArea(area: number):string {
+  getFormattedArea(area: number): string {
     let output;
     if (area > 10000) {
       output = (Math.round(area / 1000000 * 100) / 100) +

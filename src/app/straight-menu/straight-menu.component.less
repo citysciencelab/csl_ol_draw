@@ -118,6 +118,11 @@ h1 {
     }
   }
 
+  .selected-item {
+    background-color: @turquoise;
+    // border-bottom-color: desaturate(darken(@turquoise, 10%), 30%);
+  }
+
   a[href] {
     transition: top 0.1s, left 0.25s, opacity 1s, box-shadow 0.25s;
     border-radius: @radius;
@@ -146,8 +151,4 @@ h1 {
   input:checked ~ a[href]:nth-of-type(1) { .position(1,5); }
   input:checked ~ a[href]:nth-of-type(2) { .position(2,5); }
   input:checked ~ a[href]:nth-of-type(3) { .position(3,5); }
-  input:checked ~ a[href]:nth-of-type(4) { .position(4,5); }
-  input:checked ~ a[href]:nth-of-type(5) { .position(5,5); }
-  input:checked ~ a[href]:nth-of-type(6) { .position(6,5); }
-  input:checked ~ a[href]:nth-of-type(7) { .position(7,5); }
 }

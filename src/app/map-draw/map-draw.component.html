@@ -1,11 +1,11 @@
 <div style="height: 100%">
   <div class="circle-menu-holder">
-    <app-circle-menu
-      (newSelection)="interactionFromMenu($event)"></app-circle-menu>
+    <app-circle-menu (newSelection)="interactionFromMenu($event)"></app-circle-menu>
   </div>
   <!--<div ngIf="" class="circle-menu-holder">-->
-  <div class="straight-menu-holder">
-    <!--<app-straight-menu></app-straight-menu>-->
+  <div *ngIf="interactionSpecifics === 'Type'"
+       class="straight-menu-holder">
+    <app-straight-menu (newSelection)="setBuildingTpe($event)" [selectedType]="selectedAreaType"></app-straight-menu>
   </div>
   <div class="resize_button ol-control">
     <button (click)="goConfiguration()"
