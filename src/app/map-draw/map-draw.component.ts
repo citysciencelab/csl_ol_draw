@@ -152,6 +152,16 @@ export class MapDrawComponent implements OnInit {
     return vector;
   }
 
+  public getCurrenTypeColor(buildingType: string, colorType: string) {
+    if (buildingType === "Wohnen") {
+      return this.livingStyle[colorType];
+    } else if (buildingType === "Gewerbe") {
+      return this.officeStyle[colorType];
+    } else if (buildingType === "Industrie") {
+      return this.industryStyle[colorType];
+    }
+  }
+
 
   /*
   *   Setting building type from menu
@@ -224,15 +234,16 @@ export class MapDrawComponent implements OnInit {
       if (this.interactionSpecifics === "Type") {
 
         let newSrc: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+        let currentType = features[0].get("buildingType");
+        let src: VectorSource = this.areaToSourceMap[currentType];
 
         for (let feat of features) {
-          let currentType = feat.get("buildingType");
-          let src: VectorSource = this.areaToSourceMap[currentType];
-          feat.set(this.selectedAreaType);
+          feat.set('buildingType', this.selectedAreaType);
+          feat.set('color', this.getCurrenTypeColor(this.selectedAreaType, "fillColor"));
           src.removeFeature(feat);
-          newSrc.addFeature(feat);
-          src.dispatchEvent('change');
+          newSrc.addFeature(feat);;
         }
+        src.dispatchEvent('change')
         newSrc.dispatchEvent('change');
       } else if (this.interactionSpecifics === "Height") {
         for (let feat of features) {
@@ -396,7 +407,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
-    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType});
+    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType, color: this.getCurrenTypeColor(this.selectedAreaType, "fillColor")});
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
     // Removing the tooltip
