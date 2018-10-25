@@ -1,15 +1,14 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-circle-menu',
-  templateUrl: './circle-menu.component.html',
-  styleUrls: ['./circle-menu.component.less']
+  selector: 'app-straight-menu',
+  templateUrl: './straight-menu.component.html',
+  styleUrls: ['./straight-menu.component.less']
 })
-export class CircleMenuComponent implements OnInit {
+export class StraightMenuComponent implements OnInit {
 
   @Output() newSelection = new EventEmitter<Object>();
   isDragging = false;
-  selectedAction = 'DrawPolygon';
 
   constructor() { }
 
@@ -17,11 +16,10 @@ export class CircleMenuComponent implements OnInit {
   }
 
   menuItemClick(interActionType: string, interActionValue: string) {
-    let selection: Object = [];
-    selection['action'] = interActionType;
-    selection['value'] = interActionValue;
-    this.newSelection.emit(selection);
-    this.selectedAction = interActionType+ (interActionValue ? interActionValue : '');
+    // let selection: Object = [];
+    // selection['action'] = interActionType;
+    // selection['value'] = interActionValue;
+    // this.newSelection.emit(selection);
   }
 
   onDragStart(evt) {
@@ -33,4 +31,5 @@ export class CircleMenuComponent implements OnInit {
       this.isDragging = false;
     }, 500);
   }
+
 }

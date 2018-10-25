@@ -172,7 +172,7 @@ export class MapDrawComponent implements OnInit {
     }
 
     if (this.moveEvent) {
-      this.map.un('singleclick', this.mapMoveHandler);
+      this.map.un('click', this.mapMoveHandler);
     } else if (this.deleteEvent) {
       this.map.un('singleclick', this.mapDeleteHandler);
     }
@@ -195,6 +195,7 @@ export class MapDrawComponent implements OnInit {
       condition: click
     });
     this.map.addInteraction(this.selectControl);
+    this.interaction = this.selectControl;
     this.selectControl.on('select', this.mapSelectHandler);
   }
 
@@ -214,7 +215,13 @@ export class MapDrawComponent implements OnInit {
         newSrc.dispatchEvent('change');
       } else if (this.interactionSpecifics === "Height") {
         for (let feat of features) {
-          feat.set('height', '35');
+          let height = feat.get('height');
+          if (height) {
+            let newHeight = parseInt(height) + 35;
+            feat.set('height', newHeight+'');
+          } else {
+            feat.set('height', '35');
+          }
         }
       }
       this.selectControl.getFeatures().clear();
@@ -238,7 +245,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   addMoveInteraction() {
-    this.moveEvent = this.map.on('singleclick', this.mapMoveHandler);
+    this.moveEvent = this.map.on('click', this.mapMoveHandler);
   }
 
   mapMoveHandler = (evt) => {
@@ -248,19 +255,23 @@ export class MapDrawComponent implements OnInit {
         source: this.areaToSourceMap[this.selectedAreaType],
         target: features[0]
       });
+      interact.on('translateend', evt => {
+        this.saveData();
+      })
       this.map.addInteraction(interact);
       this.interaction = interact;
     }
-    this.saveData();
   }
 
   addModifyInteraction() {
     let interact = new Modify({
       source: this.areaToSourceMap[this.selectedAreaType]
     });
+    interact.on('modifyend', evt => {
+      this.saveData();
+    })
     this.map.addInteraction(interact);
     this.interaction = interact;
-    // TODO: Hier noch einen Listener, der das Modify an die Map weitergibt ...
   }
 
   addDrawInteraction() {

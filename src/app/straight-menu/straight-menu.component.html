@@ -1,0 +1,21 @@
+<nav class="straight" id="straight-menu"
+     cdkDrag
+     (cdkDragEnded)="onDragEnded($event)"
+     (cdkDragStarted)="onDragStart($event)">
+  <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
+  <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')">
+    <i class="material-icons menu-icons white">factory</i>
+  </a>
+  <a href="javascript:void(0)" (click)="menuItemClick('Modify')">
+    <i class="material-icons menu-icons white">format_shapes</i>
+  </a>
+  <a href="javascript:void(0)" (click)="menuItemClick('Delete')">
+    <i class="material-icons menu-icons white">clear</i>
+  </a>
+  <a href="">
+    <i class="material-icons menu-icons white">menu</i>
+  </a>
+  <label for="menu" class='fa fa-bars'>
+    <i class="material-icons menu-icons white">menu</i>
+  </label>
+</nav>

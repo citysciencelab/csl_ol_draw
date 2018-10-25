@@ -1,27 +1,36 @@
-<nav class="radial" cdkDrag
+<nav id="circle-menu"
+     class="radial"
+     cdkDrag
      (cdkDragEnded)="onDragEnded($event)"
      (cdkDragStarted)="onDragStart($event)">
   <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
-  <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')">
+  <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')"
+     [className]="selectedAction === 'DrawPolygon' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">create</i>
   </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('Modify')">
+  <a href="javascript:void(0)" (click)="menuItemClick('Modify')"
+     [className]="selectedAction === 'Modify' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">format_shapes</i>
   </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('Delete')">
-    <i class="material-icons menu-icons white">clear</i>
-  </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('Move')">
+  <a href="javascript:void(0)" (click)="menuItemClick('Move')"
+     [className]="selectedAction === 'Move' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">open_with</i>
   </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('DeleteAll')">
-    <i class="material-icons menu-icons white">delete_outline</i>
-  </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('Select','Height')">
+  <a href="javascript:void(0)" (click)="menuItemClick('Select','Height')"
+     [className]="selectedAction === 'SelectHeight' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">swap_vert</i>
   </a>
-  <a href="javascript:void(0)" (click)="menuItemClick('Select','Type')">
+  <a href="javascript:void(0)" (click)="menuItemClick('Select','Type')"
+     [className]="selectedAction === 'SelectType' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">store_mall_directory</i>
+  </a>
+  <a href="javascript:void(0)" (click)="menuItemClick('Delete')"
+     [className]="selectedAction === 'Delete' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons white">delete_outline</i>
+  </a>
+  <a href="javascript:void(0)" (click)="menuItemClick('DeleteAll')"
+     [className]="selectedAction === 'DeleteAll' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons white">clear</i>
   </a>
   <a href="">
     <i class="material-icons menu-icons white">menu</i>
