@@ -98,7 +98,7 @@ export class MapDrawComponent implements OnInit {
     this.mapView = new View({
       center: fromLonLat(grasbrook),
       zoom: this.initialZoom,
-      rotation: 40
+      rotation: 0
     });
 
     let vectorWohnen = this.createAreaLayer('Wohnen', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']]);
