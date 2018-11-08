@@ -1,11 +1,7 @@
 <div style="height: 100%">
   <div class="circle-menu-holder">
-    <app-circle-menu (newSelection)="interactionFromMenu($event)"></app-circle-menu>
-  </div>
-  <!--<div ngIf="" class="circle-menu-holder">-->
-  <div *ngIf="interactionSpecifics === 'Type'"
-       class="straight-menu-holder">
-    <app-straight-menu (newSelection)="setBuildingTpe($event)" [selectedType]="selectedAreaType"></app-straight-menu>
+    <app-circle-menu (newSelection)="interactionFromMenu($event)"
+                     (newBuildingTypeSelection)="setBuildingTpe($event)"></app-circle-menu>
   </div>
   <div class="resize_button ol-control">
     <button (click)="goConfiguration()"
@@ -14,5 +10,9 @@
       <i class="material-icons md-24">fullscreen_exit</i>
     </button>
   </div>
+
+  <app-drag-view-menu (drag3DView)="isDrag3DView($event)"
+    style="position: absolute; left: 0px; bottom: 0px; z-index: 50;"></app-drag-view-menu>
+
   <div id="olMap" class="map"></div>
 </div>

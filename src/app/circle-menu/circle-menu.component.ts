@@ -8,7 +8,9 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class CircleMenuComponent implements OnInit {
 
   @Output() newSelection = new EventEmitter<Object>();
+  @Output() newBuildingTypeSelection = new EventEmitter<string>();
   isDragging = false;
+  isMenuOpen = true;
   selectedAction = 'DrawPolygon';
 
   constructor() { }
@@ -21,11 +23,15 @@ export class CircleMenuComponent implements OnInit {
     selection['action'] = interActionType;
     selection['value'] = interActionValue;
     this.newSelection.emit(selection);
-    this.selectedAction = interActionType+ (interActionValue ? interActionValue : '');
+    this.selectedAction = interActionType + (interActionValue ? interActionValue : '');
   }
 
   onDragStart(evt) {
     this.isDragging = true;
+  }
+
+  setBuildingTpe(selection: string) {
+    this.newBuildingTypeSelection.emit(selection);
   }
 
   onDragEnded(evt) {

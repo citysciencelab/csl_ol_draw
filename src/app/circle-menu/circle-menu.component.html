@@ -3,7 +3,7 @@
      cdkDrag
      (cdkDragEnded)="onDragEnded($event)"
      (cdkDragStarted)="onDragStart($event)">
-  <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
+  <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null" (change)="isMenuOpen = !isMenuOpen">
   <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')"
      [className]="selectedAction === 'DrawPolygon' ? 'selected-item' : ''">
     <i class="material-icons menu-icons white">create</i>
@@ -36,6 +36,13 @@
     <i class="material-icons menu-icons white">menu</i>
   </a>
   <label for="menu" class='fa fa-bars'>
-    <i class="material-icons menu-icons white">menu</i>
+    <i class="material-icons menu-icons white" style="line-height: 3rem;">menu</i>
   </label>
+
+
+  <div *ngIf="isMenuOpen && selectedAction === 'SelectType'"
+       class="straight-menu-holder">
+    <app-straight-menu style="position: absolute; top: 13px; left: 90px"
+                       (newSelection)="setBuildingTpe($event)" [selectedType]="selectedAreaType"></app-straight-menu>
+  </div>
 </nav>

@@ -21,6 +21,7 @@ import {ChartModule, HIGHCHARTS_MODULES} from 'angular-highcharts';
 import {SpiderComponent} from "./chart/spider/spider.component";
 import {CircleMenuComponent} from "./circle-menu/circle-menu.component";
 import { StraightMenuComponent } from './straight-menu/straight-menu.component';
+import { DragViewMenuComponent } from './drag-view-menu/drag-view-menu.component';
 
 
 export function highchartsModules() {
@@ -36,7 +37,8 @@ export function highchartsModules() {
     InfoscreenComponent,
     SpiderComponent,
     CircleMenuComponent,
-    StraightMenuComponent
+    StraightMenuComponent,
+    DragViewMenuComponent
   ],
   imports: [
     AppRoutingModule,

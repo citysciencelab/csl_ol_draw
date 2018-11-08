@@ -40,6 +40,7 @@ export class MapDrawComponent implements OnInit {
   initialZoom = 17;
   savedData = '';
   dataFor3D = '';
+  isDrag3d = false;
 
   interaction = null;
 
@@ -92,10 +93,10 @@ export class MapDrawComponent implements OnInit {
   }
 
   initMap() {
-    let grassbrook = [10.013643732087715, 53.532553758257485];
+    let grasbrook = [10.013643732087715, 53.532553758257485];
 
     this.mapView = new View({
-      center: fromLonLat(grassbrook),
+      center: fromLonLat(grasbrook),
       zoom: this.initialZoom
     });
 
@@ -127,11 +128,15 @@ export class MapDrawComponent implements OnInit {
   }
 
   mapMoveEndHandler = (evt) => {
-    const message2: LocalStorageMessage = {
-      type: 'tool-new-map-position',
-      data: toLonLat(this.mapView.get('center'))
-    };
-    this.localStorageService.sendMessage(message2);
+    if (this.isDrag3d) {
+      let sendData = toLonLat(this.mapView.get('center'));
+      sendData.push(this.mapView.get('rotation'));
+      const message2: LocalStorageMessage = {
+        type: 'tool-new-map-position',
+        data: sendData
+      };
+      this.localStorageService.sendMessage(message2);
+    }
   }
 
   private createAreaLayer(areaName: string, colorSheme: string[]) {
@@ -179,6 +184,15 @@ export class MapDrawComponent implements OnInit {
 
   public setBuildingTpe(selection: string) {
     this.selectedAreaType = selection;
+  }
+
+
+  /*
+  *   Setting 3D dragging from menu
+  */
+
+  public isDrag3DView(isDragging3D: boolean) {
+    this.isDrag3d = isDragging3D;
   }
 
 

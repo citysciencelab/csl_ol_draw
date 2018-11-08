@@ -62,8 +62,10 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
           },
 
           title: {
-            text: 'Soll-ist-Vergleich',
-            x: -80
+            text:'',
+            style : {
+              display : 'none'
+            }
           },
 
           pane: {
@@ -87,9 +89,8 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
           },
 
           legend: {
-            align: 'right',
-            verticalAlign: 'top',
-            y: 70,
+            align: 'center',
+            verticalAlign: 'bottom',
             layout: 'vertical'
           },
           series: data

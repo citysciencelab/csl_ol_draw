@@ -51,11 +51,11 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   private initMap() {
-    let grassbrook = [10.013643732087715, 53.532553758257485];
+    let grasbrook = [10.013643732087715, 53.532553758257485];
 
     this.glMap = new GLMap('map', {
-      position: { latitude: grassbrook[1], longitude: grassbrook[0]},
-      zoom: 16,
+      position: { latitude: grasbrook[1], longitude: grasbrook[0]},
+      zoom: 17,
       minZoom: 12,
       maxZoom: 20,
       tilt: 50
@@ -166,7 +166,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       });
     } else if (message.type == 'tool-new-map-position') {
       console.log(message.data)
-      this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]}
+      this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]};
+      this.glMap['rotation'] = message.data[2];
     }
 
   }
