@@ -58,7 +58,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       zoom: 17,
       minZoom: 12,
       maxZoom: 20,
-      tilt: 50
+      tilt: 50,
+      rotation: 0
     });
 
     this.createBuildingsLayer(null);
@@ -167,7 +168,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     } else if (message.type == 'tool-new-map-position') {
       console.log(message.data)
       this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]};
-      this.glMap['rotation'] = message.data[2];
+      this.glMap.setRotation(message.data[2]);
     }
 
   }
