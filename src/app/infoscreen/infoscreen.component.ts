@@ -168,9 +168,16 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     } else if (message.type == 'tool-new-map-position') {
       console.log(message.data)
       this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]};
-      this.glMap.setRotation(message.data[2]);
+      let degree = this.radians_to_degrees(message.data[2]);
+      this.glMap.setRotation(degree);
     }
 
   }
+
+  radians_to_degrees(radians) {
+    let pi = Math.PI;
+    return radians * (180/pi);
+  }
+
 
 }
