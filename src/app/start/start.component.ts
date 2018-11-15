@@ -45,9 +45,9 @@ export class StartComponent implements OnInit {
   menuState = 'active';
   topicState = 'inactive';
   slideState = 'noSelect';
-  sliderValueLiving = 500;
-  sliderValueWorking = 500;
-  sliderValueIndustry = 500;
+  sliderValueLiving = 25000;
+  sliderValueWorking = 25000;
+  sliderValueIndustry = 25000;
 
   constructor(private localStorageService: LocalStorageService,
               private router: Router) { }

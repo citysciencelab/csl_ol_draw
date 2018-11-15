@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, AfterViewInit } from '@angular/core';
+import {Component, OnInit, NgZone, AfterViewInit} from '@angular/core';
 import {LocalStorageService} from "../local-storage/local-storage.service";
 import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
 
@@ -15,6 +15,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
 
   public isToolStarted = true;
   private spiderData;
+  private columnData;
   private osmb;
   private gJson;
   private glMap;
@@ -28,17 +29,21 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone) {
     this.createAndUpdateSpiderData(null, null);
+
+    this.createBarData(this.spiderData[0]['data']);
   }
 
   private createAndUpdateSpiderData(ist: number[], soll: number[]) {
-    let dd =0;
+    // The array order is: 'Living', 'Office', 'Industrie' or ('Living, Office, Industry')
     return this.spiderData =
       [{
-        name: 'Angestrebte Fläche in m²',
-        data: ist ? ist : [500, 500, 500]
-      }, {
         name: 'Aktuelle Fläche in m²',
-        data: soll ? soll : [0, 0, 0]
+        data: ist ? ist : [0, 0, 0],
+        color: '#7cb5ec'
+      }, {
+        name: 'Angestrebte Fläche in m²',
+        data: soll ? soll : [25000, 25000, 25000],
+        color: '#FF8000'
       }];
   }
 
@@ -54,7 +59,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     let grasbrook = [10.013643732087715, 53.532553758257485];
 
     this.glMap = new GLMap('map', {
-      position: { latitude: grasbrook[1], longitude: grasbrook[0]},
+      position: {latitude: grasbrook[1], longitude: grasbrook[0]},
       zoom: 17,
       minZoom: 12,
       maxZoom: 20,
@@ -140,10 +145,29 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     }
   }
 
-  addBuildingsToMap(jsonData) {
+  processBuildingData(jsonData) {
     this.createBuildingsLayer(jsonData);
-    //this.osmb.destroy();
-    // this.osmb.addGeoJSONTiles(jsonData);
+
+    let ist: number[] = [0, 0, 0];
+    for (let feature of jsonData['features']) {
+      if (feature['properties']['buildingType'] === 'Wohnen') {
+        ist[0] += feature['properties']['area'];
+      } else if (feature['properties']['buildingType'] === 'Gewerbe') {
+        ist[1] += feature['properties']['area'];
+      } else if (feature['properties']['buildingType'] === 'Industry') {
+        ist[2] += feature['properties']['area'];
+      }
+    }
+
+    this.createBarData(ist);
+    this.createAndUpdateSpiderData(ist, this.spiderData[1]["data"]);
+  }
+
+  createBarData(ist: number[]) {
+    this.columnData = [{
+      name: 'Aktuelle Bebauung',
+      data: [ist[0], ist[1], ist[2]]
+    }];
   }
 
   receiveMessage(message: LocalStorageMessage) {
@@ -158,25 +182,31 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       }
     } else if (message.type == 'tool-select-goals') {
       this.zone.run(() => {
-        let newData = this.createAndUpdateSpiderData(message.data.values, this.spiderData[1]["data"]);
+        let newData = this.createAndUpdateSpiderData(this.spiderData[0]["data"], message.data.values);
         this.spiderData = newData;
       });
     } else if (message.type == 'tool-new-buildings-json') {
       this.zone.run(() => {
-        this.addBuildingsToMap(message.data)
+        this.processBuildingData(message.data)
       });
     } else if (message.type == 'tool-new-map-position') {
-      console.log(message.data)
-      this.glMap['position'] = { latitude: message.data[1], longitude: message.data[0]};
+      let currentPositon = this.glMap.getRotation();
+      if (currentPositon['latitude'] != message.data[1] || currentPositon['longitude'] != message.data[0]) {
+        this.glMap['position'] = {latitude: message.data[1], longitude: message.data[0]};
+      }
+
+      let currentRotation = this.glMap.getRotation();
       let degree = this.radians_to_degrees(message.data[2]);
-      this.glMap.setRotation(degree);
+      if (degree != currentRotation) {
+        this.glMap.setRotation(degree);
+      }
     }
 
   }
 
   radians_to_degrees(radians) {
     let pi = Math.PI;
-    return radians * (180/pi);
+    return radians * (180 / pi);
   }
 
 

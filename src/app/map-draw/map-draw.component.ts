@@ -426,9 +426,11 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
-    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType, color: this.getCurrenTypeColor(this.selectedAreaType, "fillColor")});
+    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType, area: this.measureTooltipElement.value,
+      color: this.getCurrenTypeColor(this.selectedAreaType, "fillColor")});
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
+
     // Removing the tooltip
     let staticToolTip = document.getElementsByClassName('tooltip-static')[0];
     staticToolTip.parentNode.removeChild(staticToolTip);

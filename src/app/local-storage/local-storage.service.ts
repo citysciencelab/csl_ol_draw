@@ -9,6 +9,8 @@ export class LocalStorageService {
   sendMessage(message: LocalStorageMessage) {
     localStorage.setItem('message', JSON.stringify(message));
     localStorage.removeItem('message');
+
+    console.log(localStorage.length)
   }
 
   registerMessageCallback(callback: (LocalStorageMessage) => void) {
