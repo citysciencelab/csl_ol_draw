@@ -14,6 +14,7 @@ import {LocalStorageMessage} from "../local-storage/local-storage-message.model"
 export class InfoscreenComponent implements OnInit, AfterViewInit {
 
   public isToolStarted = true;
+  public isBuildingContext = false;
   private spiderData;
   private columnData;
   private osmb;
@@ -22,6 +23,9 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
 
   areaSumMap = {};
   savedData = '';
+
+  //List of buildings that are on the GB
+  tohideData = [23504940, 23504920, 174299051, 23504901, 174299050, 23505038, 23505278];
 
   // NOT hard coded!
   private areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
@@ -72,51 +76,6 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     // this.osmb.addGeoJSONTiles('./assets/testdata/comparedata.json');
     //osmb.addGeoJSONTiles('./assets/testdata/data.json');
     // osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-
-    //***************************************************************************
-
-    /*
-    map.on('pointermove', function(e) {
-      let id = this.osmb.getTarget(e.x, e.y);
-      if (id) {
-        document.body.style.cursor = 'pointer';
-        this.osmb.highlight(id, '#f08000');
-      } else {
-        document.body.style.cursor = 'default';
-        this.osmb.highlight(null);
-      }
-    });
-    */
-
-    //***************************************************************************
-
-    // let controlButtons = document.querySelectorAll('.control button');
-    //
-    // for (let i = 0, il = controlButtons.length; i < il; i++) {
-    //   controlButtons[i].addEventListener('click', function(e) {
-    //     let button = this;
-    //     let parentClassList = button.parentNode.classList;
-    //     let direction = button.classList.contains('inc') ? 1 : -1;
-    //     let increment;
-    //     let property;
-    //
-    //     if (parentClassList.contains('tilt')) {
-    //       property = 'Tilt';
-    //       increment = direction*10;
-    //     }
-    //     if (parentClassList.contains('rotation')) {
-    //       property = 'Rotation';
-    //       increment = direction*10;
-    //     }
-    //     if (parentClassList.contains('zoom')) {
-    //       property = 'Zoom';
-    //       increment = direction*1;
-    //     }
-    //     if (property) {
-    //       map['set'+ property](map['get'+ property]()+increment);
-    //     }
-    //   });
-    // }
   }
 
   createBuildingsLayer(jsonData) {
@@ -142,6 +101,27 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     if (jsonData) {
       this.savedData = JSON.stringify(jsonData);
       this.gJson = this.osmb.addGeoJSON(jsonData);
+    }
+  }
+
+  createBuildingContext() {
+    this.isBuildingContext = !this.isBuildingContext;
+    if (this.isBuildingContext) {
+      this.glMap.setZoom(this.glMap.getZoom()-1);
+
+      this.osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+
+      // This is hiding all Buildings on the Grasbrook
+      this.osmb.hide(feature => {
+        for (let obj of this.tohideData) {
+          if (obj+"" === feature) {
+            console.log("one")
+            return 1;
+          }
+        }
+      });
+    } else {
+      this.glMap.setZoom(this.glMap.getZoom()+1);
     }
   }
 
@@ -188,6 +168,10 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     } else if (message.type == 'tool-new-buildings-json') {
       this.zone.run(() => {
         this.processBuildingData(message.data)
+      });
+    } else if (message.type == 'tool-context') {
+      this.zone.run(() => {
+        this.createBuildingContext();
       });
     } else if (message.type == 'tool-new-map-position') {
       let currentPositon = this.glMap.getRotation();

@@ -193,7 +193,8 @@ export class MapDrawComponent implements OnInit {
   */
 
   public isDrag3DView(isDragging3D: boolean) {
-    this.isDrag3d = isDragging3D;
+    // this.isDrag3d = isDragging3D;
+    this.startContextView();
   }
 
 
@@ -225,9 +226,7 @@ export class MapDrawComponent implements OnInit {
       this.map.removeInteraction(this.interaction);
     }
 
-    if (this.moveEvent) {
-      this.map.un('click', this.mapMoveHandler);
-    } else if (this.deleteEvent) {
+    if (this.deleteEvent) {
       this.map.un('singleclick', this.mapDeleteHandler);
     }
 
@@ -302,24 +301,17 @@ export class MapDrawComponent implements OnInit {
   }
 
   addMoveInteraction() {
-    this.moveEvent = this.map.on('click', this.mapMoveHandler);
+    let interact = new Translate({
+      source: this.areaToSourceMap[this.selectedAreaType]
+    });
+    interact.on('translateend', evt => {
+      this.saveData();
+    })
+    this.map.addInteraction(interact);
+    this.interaction = interact;
   }
 
-  mapMoveHandler = (evt) => {
-    let features = evt.map.getFeaturesAtPixel(evt.pixel);
-    if (features && features.length > 0) {
-      let interact = new Translate({
-        source: this.areaToSourceMap[this.selectedAreaType],
-        target: features[0]
-      });
-      interact.on('translateend', evt => {
-        this.saveData();
-      })
-      this.map.addInteraction(interact);
-      this.interaction = interact;
-    }
-  }
-
+  //TODO: To optimize this, we need to get rid of the area source map
   addModifyInteraction() {
     let interact = new Modify({
       source: this.areaToSourceMap[this.selectedAreaType]
@@ -490,4 +482,19 @@ export class MapDrawComponent implements OnInit {
   goConfiguration() {
     this.router.navigate(['/start']);
   }
+
+
+
+  /*
+  *   Outside communication
+  */
+
+  startContextView() {
+    const message2: LocalStorageMessage = {
+      type: 'tool-context',
+      data: null
+    };
+    this.localStorageService.sendMessage(message2);
+  }
+
 }

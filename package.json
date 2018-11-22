@@ -30,7 +30,7 @@
     "highcharts": "^6.0.4",
     "jquery": "^1.9.1",
     "ol": "^5.0.3",
-    "osmbuildings": "^0.2.0-b",
+    "osmbuildings": "^0.2.1",
     "popper.js": "^1.14.3",
     "proj4": "^2.4.4",
     "rxjs": "^6.3.3",
