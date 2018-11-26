@@ -20,6 +20,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   private osmb;
   private gJson;
   private glMap;
+  private contextBuildings;
 
   areaSumMap = {};
   savedData = '';
@@ -109,7 +110,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     if (this.isBuildingContext) {
       this.glMap.setZoom(this.glMap.getZoom()-1);
 
-      this.osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+      this.contextBuildings = this.osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
 
       // This is hiding all Buildings on the Grasbrook
       this.osmb.hide(feature => {
@@ -122,6 +123,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.glMap.setZoom(this.glMap.getZoom()+1);
+      // this.osmb.remove(this.contextBuildings);
     }
   }
 

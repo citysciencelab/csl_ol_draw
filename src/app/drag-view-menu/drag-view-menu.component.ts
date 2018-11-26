@@ -8,7 +8,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class DragViewMenuComponent implements OnInit {
 
   isDragView = false;
-  @Output() drag3DView = new EventEmitter<boolean>();
+  isContextView = false;
+  @Output() menuOutput = new EventEmitter<Object[]>();
 
   constructor() { }
 
@@ -17,7 +18,12 @@ export class DragViewMenuComponent implements OnInit {
 
   setIsDragView() {
     this.isDragView = !this.isDragView;
-    this.drag3DView.emit(this.isDragView);
+    this.menuOutput.emit(['drag' , this.isDragView]);
+  }
+
+  setIsContextView() {
+    this.isContextView = !this.isContextView;
+    this.menuOutput.emit(['context' , this.isContextView]);
   }
 
 }

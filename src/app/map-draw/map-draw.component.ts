@@ -192,9 +192,12 @@ export class MapDrawComponent implements OnInit {
   *   Setting 3D dragging from menu
   */
 
-  public isDrag3DView(isDragging3D: boolean) {
-    // this.isDrag3d = isDragging3D;
-    this.startContextView();
+  public specialInfoView(menuOutput: Object[]) {
+    if (menuOutput[0] === 'drag') {
+      this.isDrag3d = !this.isDrag3d;
+    } else if (menuOutput[0] === 'context') {
+      this.startContextView();
+    }
   }
 
 
