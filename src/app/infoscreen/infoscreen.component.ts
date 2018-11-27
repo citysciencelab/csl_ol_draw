@@ -34,7 +34,6 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone) {
     this.createAndUpdateSpiderData(null, null);
-
     this.createBarData(this.spiderData[0]['data']);
   }
 
@@ -136,7 +135,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
         ist[0] += feature['properties']['area'];
       } else if (feature['properties']['buildingType'] === 'Gewerbe') {
         ist[1] += feature['properties']['area'];
-      } else if (feature['properties']['buildingType'] === 'Industry') {
+      } else if (feature['properties']['buildingType'] === 'Industrie') {
         ist[2] += feature['properties']['area'];
       }
     }
