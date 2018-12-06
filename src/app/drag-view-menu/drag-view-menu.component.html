@@ -9,4 +9,9 @@
      [className]="isContextView ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: white">satellite</i>
   </a>
+  <a href="javascript:void(0)" (click)="setIsPredefined()"
+     style="left: 130px"
+     [className]="isPredefined ? 'selected-item' : ''">
+    <i class="material-icons menu-icons" style="color: white">aspect_ratio</i>
+  </a>
 </nav>

@@ -3,8 +3,10 @@ import {Router} from "@angular/router";
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
+import Feature from 'ol/Feature.js';
 import GeoJSON from 'ol/Format/GeoJSON.js';
-import {Style, Fill, Stroke, Circle} from 'ol/Style.js';
+import {Style, Fill, Stroke, Circle, Icon} from 'ol/Style.js';
+import Point from 'ol/geom/Point.js';
 import Select from 'ol/interaction/Select.js';
 import Draw from 'ol/interaction/Draw.js';
 import Modify from 'ol/interaction/Modify.js';
@@ -61,7 +63,7 @@ export class MapDrawComponent implements OnInit {
   measureTooltip;
 
   deleteEvent;
-  moveEvent;
+  createEvent;
   selectControl;
 
   livingStyle = {
@@ -197,6 +199,10 @@ export class MapDrawComponent implements OnInit {
       this.isDrag3d = !this.isDrag3d;
     } else if (menuOutput[0] === 'context') {
       this.startContextView();
+    } else if (menuOutput[0] === 'predefined') {
+      let newEventObject = [];
+      newEventObject['value'] = "Predefined";
+      this.interactionSelect(newEventObject);
     }
   }
 
@@ -232,6 +238,9 @@ export class MapDrawComponent implements OnInit {
     if (this.deleteEvent) {
       this.map.un('singleclick', this.mapDeleteHandler);
     }
+    if (this.createEvent) {
+      this.map.un('singleclick', this.mapCreateHandler);
+    }
 
     if (value == 'Draw') {
       this.addDrawInteraction();
@@ -243,7 +252,39 @@ export class MapDrawComponent implements OnInit {
       this.addDeleteInteraction();
     } else if (value == 'Select') {
       this.addSelectInteraction();
+    } else if (value == 'Predefined') {
+      this.addCreateInteraction();
     }
+  }
+
+  addCreateInteraction() {
+    this.createEvent = this.map.on('singleclick', this.mapCreateHandler);
+  }
+
+  mapCreateHandler = (evt) => {
+
+    let src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+    let coordinate = evt.coordinate;
+
+    let iconFeature = new Feature({
+      geometry: new Point(coordinate),
+      name: 'Null Island',
+      population: 4000,
+      rainfall: 500,
+    });
+
+    let iconStyle = new Style({
+      image: new Icon(/** @type {module:ol/style/Icon~Options} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        src: 'assets/qr/2.png'
+      }))
+    });
+
+    iconFeature.setStyle(iconStyle);
+    // iconFeature.setPosition(coordinate);
+    src.addFeature(iconFeature);
   }
 
   addSelectInteraction() {
@@ -268,9 +309,9 @@ export class MapDrawComponent implements OnInit {
           feat.set('buildingType', this.selectedAreaType);
           feat.set('color', this.getCurrenTypeColor(this.selectedAreaType, "fillColor"));
           src.removeFeature(feat);
-          newSrc.addFeature(feat);;
+          newSrc.addFeature(feat);
         }
-        src.dispatchEvent('change')
+        src.dispatchEvent('change');
         newSrc.dispatchEvent('change');
       } else if (this.interactionSpecifics === "Height") {
         for (let feat of features) {

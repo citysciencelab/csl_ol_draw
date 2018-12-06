@@ -9,6 +9,7 @@ export class DragViewMenuComponent implements OnInit {
 
   isDragView = false;
   isContextView = false;
+  isPredefined = false;
   @Output() menuOutput = new EventEmitter<Object[]>();
 
   constructor() { }
@@ -24,6 +25,11 @@ export class DragViewMenuComponent implements OnInit {
   setIsContextView() {
     this.isContextView = !this.isContextView;
     this.menuOutput.emit(['context' , this.isContextView]);
+  }
+
+  setIsPredefined() {
+    this.isPredefined = !this.isPredefined;
+    this.menuOutput.emit(['predefined' , this.isPredefined]);
   }
 
 }
