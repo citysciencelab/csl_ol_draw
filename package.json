@@ -32,7 +32,6 @@
     "jquery": "^1.9.1",
     "ngx-drag-scroll": "^2.0.4",
     "ol": "^5.0.3",
-    "olcs": "^2.6.0",
     "osmbuildings": "^0.2.0-b",
     "popper.js": "^1.14.3",
     "proj4": "^2.4.4",
