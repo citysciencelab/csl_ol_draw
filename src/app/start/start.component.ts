@@ -87,4 +87,8 @@ export class StartComponent implements OnInit {
     this.router.navigate(['/draw']);
   }
 
+  goToComparison() {
+    this.router.navigate(['/compare']);
+  }
+
 }

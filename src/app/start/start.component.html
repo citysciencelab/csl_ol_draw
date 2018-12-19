@@ -63,7 +63,6 @@
         </div>
       </div>
 
-      <h1></h1>
 
       <div class="row headline-row h-20 my-auto" style="width: 100%;">
         <div class="col-md-12">
@@ -75,10 +74,17 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-2" (click)="startTopic('free')" [@showTopic]="topicState">
+            <div class="col-md-2 offset-md-1" (click)="startTopic('free')" [@showTopic]="topicState">
               <div class="transparent_holder">
                 <div class="holder_content">
-                  <p>Fläche wählen</p>
+                  <p>Select area</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2 offset-md-1" (click)="goToComparison()" [@showTopic]="topicState">
+              <div class="transparent_holder">
+                <div class="holder_content">
+                  <p>Compare layouts</p>
                 </div>
               </div>
             </div>

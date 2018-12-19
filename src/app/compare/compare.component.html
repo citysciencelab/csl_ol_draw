@@ -1,0 +1,41 @@
+<div class="compare">
+
+  <div class="resize_button ol-control">
+    <button (click)="goBack()"
+            #infos="matTooltip" matTooltipPosition="left"
+            matTooltip="Zurück zur Flächenauswahl">
+      <i class="material-icons md-24">fullscreen_exit</i>
+    </button>
+  </div>
+
+  <div class="row first-row">
+    <div *ngIf="!savedLayouts || savedLayouts.length < 1" class="col-md-12 warning-row"
+    (click)="goBack()">
+      <h1>You have to layouts saved yet.</h1>
+      <h3>Please draw some suggestions to compare your results.</h3>
+      <h5>Tap to go back ....</h5>
+    </div>
+
+    <div *ngIf="savedLayouts && savedLayouts.length > 0" class="col-md-1">
+      <button class="button-left nav-button" (click)="moveLeft()">
+        <i class="material-icons menu-icons white">navigate_before</i>
+      </button>
+    </div>
+    <div *ngIf="savedLayouts && savedLayouts.length > 0" class="col-md-10">
+      <div class="d-flex justify-content-center">
+        <drag-scroll #nav drag-scroll-y-disabled="true" scrollbar-hidden="false" style="width: 1260px; height: 450px">
+          <div drag-scroll-item *ngFor="let layout of savedLayouts" style="text-align: center">
+            <h2>{{layout.title}}</h2>
+            <div id="{{layout.title}}" class="map" style="width: 400px; height: 400px; margin: 20px"></div>
+            <div class="open-map">open this design</div>
+          </div>
+        </drag-scroll>
+      </div>
+    </div>
+    <div *ngIf="savedLayouts && savedLayouts.length > 0" class="col-md-1">
+      <button class="button-right nav-button"  (click)="moveRight()">
+        <i class="material-icons menu-icons white">navigate_next</i>
+      </button>
+    </div>
+  </div>
+</div>

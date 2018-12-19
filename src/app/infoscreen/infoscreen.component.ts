@@ -1,10 +1,10 @@
 import {Component, OnInit, NgZone, AfterViewInit} from '@angular/core';
-import {LocalStorageService} from "../local-storage/local-storage.service";
-import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
+import {LocalStorageService} from '../local-storage/local-storage.service';
+import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
 
 // declare let GLMap: any;
-// import * as GLMap from '../../../testfiles/tests/OSMBuildings/OSMBuildings.js"';
-// import * as osmxfrom from "../../../testfiles/tests/OSMBuildings/OSMBuildings.js";
+// import * as GLMap from '../../../testfiles/tests/OSMBuildings/OSMBuildings.js'';
+// import * as osmxfrom from '../../../testfiles/tests/OSMBuildings/OSMBuildings.js";
 
 @Component({
   selector: 'app-infoscreen',
@@ -25,7 +25,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   areaSumMap = {};
   savedData = '';
 
-  //List of buildings that are on the GB
+  // List of buildings that are on the GB
   tohideData = [23504940, 23504920, 174299051, 23504901, 174299050, 23505038, 23505278];
 
   // NOT hard coded!
@@ -60,7 +60,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   private initMap() {
-    let grasbrook = [10.013643732087715, 53.532553758257485];
+    const grasbrook = [10.013643732087715, 53.532553758257485];
 
     this.glMap = new GLMap('map', {
       position: {latitude: grasbrook[1], longitude: grasbrook[0]},
@@ -74,7 +74,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     this.createBuildingsLayer(null);
 
     // this.osmb.addGeoJSONTiles('./assets/testdata/comparedata.json');
-    //osmb.addGeoJSONTiles('./assets/testdata/data.json');
+    // osmb.addGeoJSONTiles('./assets/testdata/data.json');
     // osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
   }
 
@@ -107,21 +107,20 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   createBuildingContext() {
     this.isBuildingContext = !this.isBuildingContext;
     if (this.isBuildingContext) {
-      this.glMap.setZoom(this.glMap.getZoom()-1);
+      this.glMap.setZoom(this.glMap.getZoom() - 1);
 
       this.contextBuildings = this.osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
 
       // This is hiding all Buildings on the Grasbrook
       this.osmb.hide(feature => {
-        for (let obj of this.tohideData) {
-          if (obj+"" === feature) {
-            console.log("one")
+        for (const obj of this.tohideData) {
+          if (obj + '' === feature) {
             return 1;
           }
         }
       });
     } else {
-      this.glMap.setZoom(this.glMap.getZoom()+1);
+      this.glMap.setZoom(this.glMap.getZoom() + 1);
       // this.osmb.remove(this.contextBuildings);
     }
   }
@@ -129,8 +128,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   processBuildingData(jsonData) {
     this.createBuildingsLayer(jsonData);
 
-    let ist: number[] = [0, 0, 0];
-    for (let feature of jsonData['features']) {
+    const ist: number[] = [0, 0, 0];
+    for (const feature of jsonData['features']) {
       if (feature['properties']['buildingType'] === 'Wohnen') {
         ist[0] += feature['properties']['area'];
       } else if (feature['properties']['buildingType'] === 'Gewerbe') {
@@ -141,7 +140,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     }
 
     this.createBarData(ist);
-    this.createAndUpdateSpiderData(ist, this.spiderData[1]["data"]);
+    this.createAndUpdateSpiderData(ist, this.spiderData[1]['data']);
   }
 
   createBarData(ist: number[]) {
@@ -152,7 +151,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   receiveMessage(message: LocalStorageMessage) {
-    if (message.type == 'tool-interaction') {
+    if (message.type === 'tool-interaction') {
       switch (message.data.name) {
         case 'tool-start':
           this.isToolStarted = true;
@@ -161,28 +160,28 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
           this.isToolStarted = false;
           break;
       }
-    } else if (message.type == 'tool-select-goals') {
+    } else if (message.type === 'tool-select-goals') {
       this.zone.run(() => {
-        let newData = this.createAndUpdateSpiderData(this.spiderData[0]["data"], message.data.values);
+        const newData = this.createAndUpdateSpiderData(this.spiderData[0]['data'], message.data.values);
         this.spiderData = newData;
       });
-    } else if (message.type == 'tool-new-buildings-json') {
+    } else if (message.type === 'tool-new-buildings-json') {
       this.zone.run(() => {
-        this.processBuildingData(message.data)
+        this.processBuildingData(message.data);
       });
-    } else if (message.type == 'tool-context') {
+    } else if (message.type === 'tool-context') {
       this.zone.run(() => {
         this.createBuildingContext();
       });
-    } else if (message.type == 'tool-new-map-position') {
-      let currentPositon = this.glMap.getRotation();
-      if (currentPositon['latitude'] != message.data[1] || currentPositon['longitude'] != message.data[0]) {
+    } else if (message.type === 'tool-new-map-position') {
+      const currentPositon = this.glMap.getRotation();
+      if (currentPositon['latitude'] !== message.data[1] || currentPositon['longitude'] !== message.data[0]) {
         this.glMap['position'] = {latitude: message.data[1], longitude: message.data[0]};
       }
 
-      let currentRotation = this.glMap.getRotation();
-      let degree = this.radians_to_degrees(message.data[2]);
-      if (degree != currentRotation) {
+      const currentRotation = this.glMap.getRotation();
+      const degree = this.radians_to_degrees(message.data[2]);
+      if (degree !== currentRotation) {
         this.glMap.setRotation(degree);
       }
     }
@@ -190,7 +189,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   radians_to_degrees(radians) {
-    let pi = Math.PI;
+    const pi = Math.PI;
     return radians * (180 / pi);
   }
 

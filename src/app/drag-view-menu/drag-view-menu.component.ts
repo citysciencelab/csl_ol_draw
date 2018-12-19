@@ -32,4 +32,12 @@ export class DragViewMenuComponent implements OnInit {
     this.menuOutput.emit(['predefined' , this.isPredefined]);
   }
 
+  setSaveData() {
+    this.menuOutput.emit(['saveData' , true]);
+  }
+
+  setFavData() {
+    this.menuOutput.emit(['favData' , true]);
+  }
+
 }

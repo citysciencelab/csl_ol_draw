@@ -1,5 +1,10 @@
 import {Component, OnInit, NgZone} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
+import {MatSnackBar} from '@angular/material';
+
+// import * as Converter from 'citygml-to-3dtiles/src/Converter.mjs';
+// import * as Converter from 'citygml-to-3dtiles/bin/citygml-to-3dtiles.mjs';
+// import OLCesium from 'olcs/OLCesium.js';
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -25,8 +30,12 @@ import {fromLonLat} from 'ol/proj.js';
 import {toLonLat} from 'ol/proj.js';
 
 import proj4 from 'proj4';
-import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
-import {LocalStorageService} from "../local-storage/local-storage.service";
+import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
+import {LocalStorageService} from '../local-storage/local-storage.service';
+
+import * as FileSaver from 'file-saver';
+import {LayoutService} from '../services/layoutservice';
+import {LayoutEntity} from '../entity/layout.entity';
 
 @Component({
   selector: 'app-map-draw',
@@ -41,8 +50,9 @@ export class MapDrawComponent implements OnInit {
   source = null;
   initialZoom = 17;
   savedData = '';
-  dataFor3D = '';
   isDrag3d = false;
+
+  savedDrafts = {};
 
   interaction = null;
 
@@ -82,20 +92,29 @@ export class MapDrawComponent implements OnInit {
   };
 
   constructor(private localStorageService: LocalStorageService,
+              private layoutService: LayoutService,
               private zone: NgZone,
-              private router: Router) {
+              private router: Router,
+              public snackBar: MatSnackBar) {
     this.mapId = 'olMap';
   }
 
   ngOnInit() {
-    for (let category of this.areaCategories) {
+    for (const category of this.areaCategories) {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
+    // const conv = this.getConverted();
   }
 
+  // async getConverted() {
+  //   const converter = new Converter();
+  //   const response = await converter.convertFiles('./input.xml', './output/').toPromise();
+  //   return response.json();
+  // }
+
   initMap() {
-    let grasbrook = [10.013643732087715, 53.532553758257485];
+    const grasbrook = [10.013643732087715, 53.532553758257485];
 
     this.mapView = new View({
       center: fromLonLat(grasbrook),
@@ -103,11 +122,11 @@ export class MapDrawComponent implements OnInit {
       rotation: 0
     });
 
-    let vectorWohnen = this.createAreaLayer('Wohnen', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']]);
-    let vectorGewerbe = this.createAreaLayer('Gewerbe', [this.officeStyle['fillColor'], this.officeStyle['strokeColor']]);
-    let vectorindustrie = this.createAreaLayer('Industrie', [this.industryStyle['fillColor'], this.industryStyle['strokeColor']]);
+    const vectorWohnen = this.createAreaLayer('Wohnen', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']]);
+    const vectorGewerbe = this.createAreaLayer('Gewerbe', [this.officeStyle['fillColor'], this.officeStyle['strokeColor']]);
+    const vectorindustrie = this.createAreaLayer('Industrie', [this.industryStyle['fillColor'], this.industryStyle['strokeColor']]);
 
-    let raster = new TileLayer({
+    const raster = new TileLayer({
       source: new OSM({
         'url': 'http://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
       })
@@ -124,6 +143,10 @@ export class MapDrawComponent implements OnInit {
       view: this.mapView
     });
 
+    // const ol3d = new OLCesium({map: this.map}); // ol2dMap is the ol.Map instance
+    // ol3d.setEnabled(true);
+
+
     this.map.on('pointerdrag', this.mapMoveEndHandler);
 
     this.selectedInteraction = 'Draw';
@@ -132,7 +155,7 @@ export class MapDrawComponent implements OnInit {
 
   mapMoveEndHandler = (evt) => {
     if (this.isDrag3d) {
-      let sendData = toLonLat(this.mapView.get('center'));
+      const sendData = toLonLat(this.mapView.get('center'));
       sendData.push(this.mapView.get('rotation'));
       const message2: LocalStorageMessage = {
         type: 'tool-new-map-position',
@@ -142,10 +165,23 @@ export class MapDrawComponent implements OnInit {
     }
   }
 
-  private createAreaLayer(areaName: string, colorSheme: string[]) {
-    let source = new VectorSource({wrapX: false});
+  // TODO: areaToSourceMap muss ersetzt werden. Die unterschiedlichen Layer werden über die Stylefunction geregelt.
+  // new ol.layer.Vector({
+  //                       source: source,
+  //                       style: styleFunction
+  //                     });
+  //
+  // function styleFunction(feature, resolution) {
+  //   var bType = feature.get('buildingType');
+  //   if (bType === "Wohnen") {
+  //     return this.livingStyle;
+  // } else
+  // }
 
-    let vector = new VectorLayer({
+  private createAreaLayer(areaName: string, colorSheme: string[]) {
+    const source = new VectorSource({wrapX: false});
+
+    const vector = new VectorLayer({
       source: source,
       opacity: 0.5,
       style: new Style({
@@ -171,11 +207,11 @@ export class MapDrawComponent implements OnInit {
   }
 
   public getCurrenTypeColor(buildingType: string, colorType: string) {
-    if (buildingType === "Wohnen") {
+    if (buildingType === 'Wohnen') {
       return this.livingStyle[colorType];
-    } else if (buildingType === "Gewerbe") {
+    } else if (buildingType === 'Gewerbe') {
       return this.officeStyle[colorType];
-    } else if (buildingType === "Industrie") {
+    } else if (buildingType === 'Industrie') {
       return this.industryStyle[colorType];
     }
   }
@@ -200,9 +236,27 @@ export class MapDrawComponent implements OnInit {
     } else if (menuOutput[0] === 'context') {
       this.startContextView();
     } else if (menuOutput[0] === 'predefined') {
-      let newEventObject = [];
-      newEventObject['value'] = "Predefined";
+      const newEventObject = [];
+      newEventObject['value'] = 'Predefined';
       this.interactionSelect(newEventObject);
+    } else if (menuOutput[0] === 'saveData') {
+      const blob = new Blob([this.savedData], {type: 'text/plain;charset=utf-8'});
+      FileSaver.saveAs(blob, 'planner-design' + new Date().getMilliseconds() + '.txt');
+    } else if (menuOutput[0] === 'favData') {
+      const layout = new LayoutEntity();
+      layout.title = 'Design ' + new Date().getMilliseconds();
+      const clonedMAp = {};
+      Object.keys(this.areaToSourceMap).map( key => {
+        const src: VectorSource = this.areaToSourceMap[key];
+        const cloneSrc = new VectorSource({wrapX: false});
+        for (const featrue of src.getFeatures()) {
+          cloneSrc.addFeature(featrue.clone());
+        }
+        clonedMAp[key] = cloneSrc;
+      });
+      layout.mapData = clonedMAp;
+      this.layoutService.addLayout(layout);
+      this.openSnackBar('Data saved for comparison');
     }
   }
 
@@ -219,7 +273,7 @@ export class MapDrawComponent implements OnInit {
     if (selection['action'] === 'DeleteAll') {
       this.clearMap();
     } else {
-      let newEventObject = [];
+      const newEventObject = [];
       newEventObject['value'] = selection['action'];
       if (selection['value']) {
         this.interactionSpecifics = selection['value'];
@@ -229,7 +283,7 @@ export class MapDrawComponent implements OnInit {
   };
 
   interactionSelect($event: any) {
-    let value = $event.value;
+    const value = $event.value;
 
     if (this.interaction) {
       this.map.removeInteraction(this.interaction);
@@ -242,17 +296,17 @@ export class MapDrawComponent implements OnInit {
       this.map.un('singleclick', this.mapCreateHandler);
     }
 
-    if (value == 'Draw') {
+    if (value === 'Draw') {
       this.addDrawInteraction();
-    } else if (value == 'Modify') {
+    } else if (value === 'Modify') {
       this.addModifyInteraction();
-    } else if (value == 'Move') {
+    } else if (value === 'Move') {
       this.addMoveInteraction();
-    } else if (value == 'Delete') {
+    } else if (value === 'Delete') {
       this.addDeleteInteraction();
-    } else if (value == 'Select') {
+    } else if (value === 'Select') {
       this.addSelectInteraction();
-    } else if (value == 'Predefined') {
+    } else if (value === 'Predefined') {
       this.addCreateInteraction();
     }
   }
@@ -263,17 +317,17 @@ export class MapDrawComponent implements OnInit {
 
   mapCreateHandler = (evt) => {
 
-    let src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
-    let coordinate = evt.coordinate;
+    const src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+    const coordinate = evt.coordinate;
 
-    let iconFeature = new Feature({
+    const iconFeature = new Feature({
       geometry: new Point(coordinate),
       name: 'Null Island',
       population: 4000,
       rainfall: 500,
     });
 
-    let iconStyle = new Style({
+    const iconStyle = new Style({
       image: new Icon(/** @type {module:ol/style/Icon~Options} */ ({
         anchor: [0.5, 46],
         anchorXUnits: 'fraction',
@@ -297,27 +351,27 @@ export class MapDrawComponent implements OnInit {
   }
 
   mapSelectHandler = (evt) => {
-    let features = evt.selected;
+    const features = evt.selected;
     if (features && features.length > 0) {
-      if (this.interactionSpecifics === "Type") {
+      if (this.interactionSpecifics === 'Type') {
 
-        let newSrc: VectorSource = this.areaToSourceMap[this.selectedAreaType];
-        let currentType = features[0].get("buildingType");
-        let src: VectorSource = this.areaToSourceMap[currentType];
+        const newSrc: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+        const currentType = features[0].get('buildingType');
+        const src: VectorSource = this.areaToSourceMap[currentType];
 
-        for (let feat of features) {
+        for (const feat of features) {
           feat.set('buildingType', this.selectedAreaType);
-          feat.set('color', this.getCurrenTypeColor(this.selectedAreaType, "fillColor"));
+          feat.set('color', this.getCurrenTypeColor(this.selectedAreaType, 'fillColor'));
           src.removeFeature(feat);
           newSrc.addFeature(feat);
         }
         src.dispatchEvent('change');
         newSrc.dispatchEvent('change');
-      } else if (this.interactionSpecifics === "Height") {
-        for (let feat of features) {
-          let height = feat.get('height');
+      } else if (this.interactionSpecifics === 'Height') {
+        for (const feat of features) {
+          const height = feat.get('height');
           if (height) {
-            let newHeight = parseInt(height) + 35;
+            const newHeight = parseInt(height) + 35;
             feat.set('height', newHeight + '');
           } else {
             feat.set('height', '35');
@@ -334,10 +388,10 @@ export class MapDrawComponent implements OnInit {
   }
 
   mapDeleteHandler = (evt) => {
-    let features = evt.map.getFeaturesAtPixel(evt.pixel);
+    const features = evt.map.getFeaturesAtPixel(evt.pixel);
     if (features && features.length > 0) {
-      let src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
-      for (let feat of features) {
+      const src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
+      for (const feat of features) {
         src.removeFeature(feat);
       }
     }
@@ -345,7 +399,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   addMoveInteraction() {
-    let interact = new Translate({
+    const interact = new Translate({
       source: this.areaToSourceMap[this.selectedAreaType]
     });
     interact.on('translateend', evt => {
@@ -355,9 +409,8 @@ export class MapDrawComponent implements OnInit {
     this.interaction = interact;
   }
 
-  //TODO: To optimize this, we need to get rid of the area source map
   addModifyInteraction() {
-    let interact = new Modify({
+    const interact = new Modify({
       source: this.areaToSourceMap[this.selectedAreaType]
     });
     interact.on('modifyend', evt => {
@@ -368,7 +421,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   addDrawInteraction() {
-    let draw = new Draw({
+    const draw = new Draw({
       source: this.areaToSourceMap[this.selectedAreaType],
       type: this.selectedDrawOption
     });
@@ -382,39 +435,37 @@ export class MapDrawComponent implements OnInit {
   */
 
   clearMap() {
-    for (let area of this.areaCategories) {
+    for (const area of this.areaCategories) {
       this.areaToSourceMap[area].clear();
     }
     this.savedData = '';
 
-    let elements: NodeListOf<Element> = document.getElementsByClassName('tooltip-static');
+    const elements: NodeListOf<Element> = document.getElementsByClassName('tooltip-static');
     for (let i = 0; i < elements.length; i++) {
-      let obj = elements[i];
+      const obj = elements[i];
       obj.parentNode.removeChild(obj);
     }
     this.saveData();
   }
 
   saveData() {
-    console.log("Saving data");
-
     this.savedData = '';
     let savedDataNew = {};
-    let tempData = [];
-    let format = new GeoJSON();
-    for (let area of this.areaCategories) {
+    const tempData = [];
+    const format = new GeoJSON();
+    for (const area of this.areaCategories) {
       // this.savedData += format.writeFeatures(this.areaToSourceMap[area].getFeatures())
-      for (let feature of this.areaToSourceMap[area].getFeatures()) {
+      for (const feature of this.areaToSourceMap[area].getFeatures()) {
         tempData.push(feature);
       }
     }
 
     this.savedData = format.writeFeatures(tempData);
     savedDataNew = JSON.parse(format.writeFeatures(tempData));
-    for (let feat of savedDataNew["features"]) {
-      for (let i = 0; i < feat["geometry"]["coordinates"][0].length; i++) {
-        let geom = feat["geometry"]["coordinates"][0][i];
-        feat["geometry"]["coordinates"][0][i] = toLonLat(geom);
+    for (const feat of savedDataNew['features']) {
+      for (let i = 0; i < feat['geometry']['coordinates'][0].length; i++) {
+        const geom = feat['geometry']['coordinates'][0][i];
+        feat['geometry']['coordinates'][0][i] = toLonLat(geom);
       }
     }
 
@@ -463,12 +514,12 @@ export class MapDrawComponent implements OnInit {
     });
 
     evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType, area: this.measureTooltipElement.value,
-      color: this.getCurrenTypeColor(this.selectedAreaType, "fillColor")});
+      color: this.getCurrenTypeColor(this.selectedAreaType, 'fillColor')});
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
 
     // Removing the tooltip
-    let staticToolTip = document.getElementsByClassName('tooltip-static')[0];
+    const staticToolTip = document.getElementsByClassName('tooltip-static')[0];
     staticToolTip.parentNode.removeChild(staticToolTip);
 
     // unset sketch
@@ -478,14 +529,14 @@ export class MapDrawComponent implements OnInit {
     this.createMeasureTooltip();
     unByKey(this.listener);
 
-    setTimeout(() => {    //<<<---    using ()=> syntax
+    setTimeout(() => {
       this.saveData();
     }, 800);
   }
 
   sketchChangeHandler = (evt) => {
     let tooltipCoord = evt.coordinate;
-    let geom = evt.target;
+    const geom = evt.target;
     let output;
     let value;
     if (geom instanceof Polygon) {
@@ -504,7 +555,7 @@ export class MapDrawComponent implements OnInit {
 
   formatArea = (polygon) => {
     return this.getFormattedArea(getArea(polygon));
-  };
+  }
 
   getFormattedArea(area: number): string {
     let output;
@@ -539,6 +590,18 @@ export class MapDrawComponent implements OnInit {
       data: null
     };
     this.localStorageService.sendMessage(message2);
+  }
+
+
+
+  /*
+  *   Misc
+  */
+
+  openSnackBar(snackText) {
+    this.snackBar.open(snackText, 'Saved', {
+      duration: 2000,
+    });
   }
 
 }

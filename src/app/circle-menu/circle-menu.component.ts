@@ -19,7 +19,8 @@ export class CircleMenuComponent implements OnInit {
   }
 
   menuItemClick(interActionType: string, interActionValue: string) {
-    let selection: Object = [];
+    // TODO: Wenn hier auf delete all geklickt wird muss sofort auf zeichnen zurück gegangen werden
+    const selection: Object = [];
     selection['action'] = interActionType;
     selection['value'] = interActionValue;
     this.newSelection.emit(selection);
@@ -35,7 +36,7 @@ export class CircleMenuComponent implements OnInit {
   }
 
   onDragEnded(evt) {
-    setTimeout(()=>{    //<<<---    using ()=> syntax
+    setTimeout(() => {
       this.isDragging = false;
     }, 500);
   }
