@@ -33,7 +33,7 @@ import proj4 from 'proj4';
 import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
 import {LocalStorageService} from '../local-storage/local-storage.service';
 
-import * as FileSaver from 'file-saver';
+// import * as FileSaver from 'file-saver';
 import {LayoutService} from '../services/layoutservice';
 import {LayoutEntity} from '../entity/layout.entity';
 
@@ -240,8 +240,8 @@ export class MapDrawComponent implements OnInit {
       newEventObject['value'] = 'Predefined';
       this.interactionSelect(newEventObject);
     } else if (menuOutput[0] === 'saveData') {
-      const blob = new Blob([this.savedData], {type: 'text/plain;charset=utf-8'});
-      FileSaver.saveAs(blob, 'planner-design' + new Date().getMilliseconds() + '.txt');
+      // const blob = new Blob([this.savedData], {type: 'text/plain;charset=utf-8'});
+      // FileSaver.saveAs(blob, 'planner-design' + new Date().getMilliseconds() + '.txt');
     } else if (menuOutput[0] === 'favData') {
       const layout = new LayoutEntity();
       layout.title = 'Design ' + new Date().getMilliseconds();
