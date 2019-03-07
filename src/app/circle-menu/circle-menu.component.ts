@@ -12,6 +12,8 @@ export class CircleMenuComponent implements OnInit {
   isDragging = false;
   isMenuOpen = true;
   selectedAction = 'DrawPolygon';
+  selectedActionData: Object = {action : 'Draw', value : 'Polygon'};
+  previousAction;
 
   constructor() { }
 
@@ -19,12 +21,28 @@ export class CircleMenuComponent implements OnInit {
   }
 
   menuItemClick(interActionType: string, interActionValue: string) {
-    // TODO: Wenn hier auf delete all geklickt wird muss sofort auf zeichnen zurück gegangen werden
-    const selection: Object = [];
-    selection['action'] = interActionType;
-    selection['value'] = interActionValue;
-    this.newSelection.emit(selection);
-    this.selectedAction = interActionType + (interActionValue ? interActionValue : '');
+    if (interActionType === 'DeleteAll') {
+      const selection: Object = [];
+      selection['action'] = interActionType;
+      this.newSelection.emit(selection);
+
+      this.selectedAction = 'DrawPolygon';
+      this.selectedActionData = {action : 'Draw', value : 'Polygon'};
+      this.newSelection.emit(this.selectedActionData);
+    } else {
+      const selection: Object = [];
+      selection['action'] = interActionType;
+      selection['value'] = interActionValue;
+
+      if (selection['action'] === 'Select' && selection['value'] === 'Type' &&
+        selection['action'] !== 'Delete') {
+        this.previousAction = this.selectedActionData;
+      }
+
+      this.newSelection.emit(selection);
+      this.selectedActionData = selection;
+      this.selectedAction = interActionType + (interActionValue ? interActionValue : '');
+    }
   }
 
   onDragStart(evt) {
@@ -33,6 +51,12 @@ export class CircleMenuComponent implements OnInit {
 
   setBuildingTpe(selection: string) {
     this.newBuildingTypeSelection.emit(selection);
+    // If we did set a new building type, we go back to the previous action - if it wasnt a delete action
+    if (this.previousAction) {
+      this.newSelection.emit(this.previousAction);
+      this.selectedActionData = this.previousAction;
+      this.selectedAction = this.previousAction['action'] + (this.previousAction['value'] ? this.previousAction['value'] : '');
+    }
   }
 
   onDragEnded(evt) {

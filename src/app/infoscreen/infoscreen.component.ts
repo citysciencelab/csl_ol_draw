@@ -182,6 +182,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       const currentRotation = this.glMap.getRotation();
       const degree = this.radians_to_degrees(message.data[2]);
       if (degree !== currentRotation) {
+        console.log(degree)
         this.glMap.setRotation(degree);
       }
     }

@@ -410,14 +410,17 @@ export class MapDrawComponent implements OnInit {
   }
 
   addModifyInteraction() {
-    const interact = new Modify({
-      source: this.areaToSourceMap[this.selectedAreaType]
-    });
-    interact.on('modifyend', evt => {
-      this.saveData();
-    })
-    this.map.addInteraction(interact);
-    this.interaction = interact;
+    // const tempData = [];
+    for (const area of this.areaCategories) {
+      const interact = new Modify({
+        source: this.areaToSourceMap[area]
+      });
+      interact.on('modifyend', evt => {
+        this.saveData();
+      })
+      this.map.addInteraction(interact);
+    }
+    // this.interaction = interact;
   }
 
   addDrawInteraction() {
