@@ -6,7 +6,7 @@ import {InfoscreenComponent} from './infoscreen/infoscreen.component';
 import {CompareComponent} from './compare/compare.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/start', pathMatch: 'full' },
+  { path: '', redirectTo: '/draw', pathMatch: 'full' },
   { path: 'start', component: StartComponent, data: { state: 'start' } },
   { path: 'draw', component: MapDrawComponent },
   // { path: 'draw', component: MapDrawComponent, data: { state: 'draw' } },

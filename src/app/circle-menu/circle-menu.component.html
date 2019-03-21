@@ -5,37 +5,45 @@
      (cdkDragStarted)="onDragStart($event)">
   <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null" (change)="isMenuOpen = !isMenuOpen">
   <a href="javascript:void(0)" (click)="menuItemClick('Draw', 'Polygon')"
-     [className]="selectedAction === 'DrawPolygon' ? 'selected-item' : ''">
+     [className]="selectedAction === 'DrawPolygon' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Draw new building outline">
     <i class="material-icons menu-icons white">create</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('Modify')"
-     [className]="selectedAction === 'Modify' ? 'selected-item' : ''">
+     [className]="selectedAction === 'Modify' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Edit buildings outlines">
     <i class="material-icons menu-icons white">format_shapes</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('Move')"
-     [className]="selectedAction === 'Move' ? 'selected-item' : ''">
+     [className]="selectedAction === 'Move' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Move building">
     <i class="material-icons menu-icons white">open_with</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('Select','Height')"
-     [className]="selectedAction === 'SelectHeight' ? 'selected-item' : ''">
+     [className]="selectedAction === 'SelectHeight' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Add height to building">
     <i class="material-icons menu-icons white">swap_vert</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('Select','Type')"
-     [className]="selectedAction === 'SelectType' ? 'selected-item' : ''">
+     [className]="selectedAction === 'SelectType' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Select building type">
     <i class="material-icons menu-icons white">store_mall_directory</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('Delete')"
-     [className]="selectedAction === 'Delete' ? 'selected-item' : ''">
+     [className]="selectedAction === 'Delete' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Delete a single building">
     <i class="material-icons menu-icons white">delete_outline</i>
   </a>
   <a href="javascript:void(0)" (click)="menuItemClick('DeleteAll')"
-     [className]="selectedAction === 'DeleteAll' ? 'selected-item' : ''">
+     [className]="selectedAction === 'DeleteAll' ? 'selected-item' : ''"
+     matTooltipPosition="above" matTooltip="Delete all buildings">
     <i class="material-icons menu-icons white">clear</i>
   </a>
   <a href="">
     <i class="material-icons menu-icons white">menu</i>
   </a>
-  <label for="menu" class='fa fa-bars'>
+  <label for="menu" class='fa fa-bars'
+         matTooltipPosition="above" matTooltip="Drag the menu">
     <i class="material-icons menu-icons white" style="line-height: 3rem;">menu</i>
   </label>
 

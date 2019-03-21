@@ -1,25 +1,26 @@
 <nav class="straight" id="infoview-drag-menu">
   <input type="checkbox" id="menu" checked>
   <a href="javascript:void(0)" (click)="setIsDragView()"
+     matTooltipPosition="above" matTooltip="Rotate infoscreen with map"
      [className]="isDragView ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: white">3d_rotation</i>
   </a>
-  <a href="javascript:void(0)" (click)="setIsContextView()"
-     style="left: 65px"
+  <a href="javascript:void(0)" (click)="setIsContextView()" style="left: 65px"
+     matTooltipPosition="above" matTooltip="3D buildings context"
      [className]="isContextView ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: white">satellite</i>
   </a>
   <a href="javascript:void(0)" (click)="setIsPredefined()"
-     style="left: 130px"
+     style="left: 130px; display: none;"
      [className]="isPredefined ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: white">aspect_ratio</i>
   </a>
   <a href="javascript:void(0)" (click)="setSaveData()"
-     style="left: 195px">
+     style="left: 195px; display: none;">
     <i class="material-icons menu-icons" style="color: white">save_alt</i>
   </a>
   <a href="javascript:void(0)" (click)="setFavData()"
-     style="left: 260px">
+     style="left: 260px; display: none;">
     <i class="material-icons menu-icons" style="color: white">star_border</i>
   </a>
 </nav>

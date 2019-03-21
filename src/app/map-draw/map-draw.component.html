@@ -3,7 +3,7 @@
     <app-circle-menu (newSelection)="interactionFromMenu($event)"
                      (newBuildingTypeSelection)="setBuildingTpe($event)"></app-circle-menu>
   </div>
-  <div class="resize_button ol-control">
+  <div class="resize_button ol-control" style="display: none">
     <button (click)="goConfiguration()"
             #infos="matTooltip" matTooltipPosition="left"
             matTooltip="Zurück zur Flächenauswahl">

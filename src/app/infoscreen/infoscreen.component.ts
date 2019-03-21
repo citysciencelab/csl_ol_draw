@@ -2,10 +2,6 @@ import {Component, OnInit, NgZone, AfterViewInit} from '@angular/core';
 import {LocalStorageService} from '../local-storage/local-storage.service';
 import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
 
-// declare let GLMap: any;
-// import * as GLMap from '../../../testfiles/tests/OSMBuildings/OSMBuildings.js'';
-// import * as osmxfrom from '../../../testfiles/tests/OSMBuildings/OSMBuildings.js";
-
 @Component({
   selector: 'app-infoscreen',
   templateUrl: './infoscreen.component.html',
@@ -38,14 +34,14 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   private createAndUpdateSpiderData(ist: number[], soll: number[]) {
-    // The array order is: 'Living', 'Office', 'Industrie' or ('Living, Office, Industry')
+    // The array order is: ('Living, Office, Industry')
     return this.spiderData =
       [{
-        name: 'Aktuelle Fläche in m²',
+        name: 'Current spatial distribution in m²',
         data: ist ? ist : [0, 0, 0],
         color: '#7cb5ec'
       }, {
-        name: 'Angestrebte Fläche in m²',
+        name: 'Designated spatial distribution in m²',
         data: soll ? soll : [25000, 25000, 25000],
         color: '#FF8000'
       }];
@@ -72,10 +68,6 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     });
 
     this.createBuildingsLayer(null);
-
-    // this.osmb.addGeoJSONTiles('./assets/testdata/comparedata.json');
-    // osmb.addGeoJSONTiles('./assets/testdata/data.json');
-    // osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
   }
 
   createBuildingsLayer(jsonData) {
@@ -180,9 +172,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       }
 
       const currentRotation = this.glMap.getRotation();
-      const degree = this.radians_to_degrees(message.data[2]);
+      const degree = this.radians_to_degrees(message.data[2]) * -1;
       if (degree !== currentRotation) {
-        console.log(degree)
         this.glMap.setRotation(degree);
       }
     }

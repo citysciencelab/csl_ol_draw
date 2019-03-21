@@ -51,7 +51,6 @@ export class CircleMenuComponent implements OnInit {
 
   setBuildingTpe(selection: string) {
     this.newBuildingTypeSelection.emit(selection);
-    // If we did set a new building type, we go back to the previous action - if it wasnt a delete action
     if (this.previousAction) {
       this.newSelection.emit(this.previousAction);
       this.selectedActionData = this.previousAction;

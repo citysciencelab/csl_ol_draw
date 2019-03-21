@@ -4,14 +4,17 @@
      (cdkDragStarted)="onDragStart($event)">
   <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
   <a href="javascript:void(0)" (click)="setBuildingType('Wohnen')"
+     matTooltipPosition="above" matTooltip="Residential"
      [className]="selectedType === 'Wohnen' ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: #90ee90">local_hotel</i>
   </a>
   <a href="javascript:void(0)" (click)="setBuildingType('Gewerbe')"
+     matTooltipPosition="above" matTooltip="Commercial"
      [className]="selectedType === 'Gewerbe' ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: #add8e6">domain</i>
   </a>
   <a href="javascript:void(0)" (click)="setBuildingType('Industrie')"
+     matTooltipPosition="above" matTooltip="Industrial "
      [className]="selectedType === 'Industrie' ? 'selected-item' : ''">
     <i class="material-icons menu-icons" style="color: #fafad2">location_city</i>
   </a>

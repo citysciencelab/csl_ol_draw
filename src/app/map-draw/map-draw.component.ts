@@ -1,17 +1,13 @@
 import {Component, OnInit, NgZone} from '@angular/core';
 import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material';
-
-// import * as Converter from 'citygml-to-3dtiles/src/Converter.mjs';
-// import * as Converter from 'citygml-to-3dtiles/bin/citygml-to-3dtiles.mjs';
-// import OLCesium from 'olcs/OLCesium.js';
-
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import Feature from 'ol/Feature.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import {Style, Fill, Stroke, Circle, Icon} from 'ol/style.js';
 import Point from 'ol/geom/Point.js';
+import {defaults as defaultInteractions, DragRotateAndZoom} from 'ol/interaction.js';
 import Select from 'ol/interaction/Select.js';
 import Draw from 'ol/interaction/Draw.js';
 import Modify from 'ol/interaction/Modify.js';
@@ -29,7 +25,6 @@ import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
 import {toLonLat} from 'ol/proj.js';
 
-import proj4 from 'proj4';
 import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
 import {LocalStorageService} from '../local-storage/local-storage.service';
 
@@ -104,14 +99,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
-    // const conv = this.getConverted();
   }
-
-  // async getConverted() {
-  //   const converter = new Converter();
-  //   const response = await converter.convertFiles('./input.xml', './output/').toPromise();
-  //   return response.json();
-  // }
 
   initMap() {
     const grasbrook = [10.013643732087715, 53.532553758257485];
@@ -142,10 +130,6 @@ export class MapDrawComponent implements OnInit {
       }),
       view: this.mapView
     });
-
-    // const ol3d = new OLCesium({map: this.map}); // ol2dMap is the ol.Map instance
-    // ol3d.setEnabled(true);
-
 
     this.map.on('pointerdrag', this.mapMoveEndHandler);
 
@@ -328,7 +312,7 @@ export class MapDrawComponent implements OnInit {
     });
 
     const iconStyle = new Style({
-      image: new Icon(/** @type {module:ol/style/Icon~Options} */ ({
+      image: new Icon(({
         anchor: [0.5, 46],
         anchorXUnits: 'fraction',
         anchorYUnits: 'pixels',
@@ -482,7 +466,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   /*
-  *   Tooltip stuff
+  *   Tooltip
   */
 
   private createTooltipAndInteractions(draw) {
@@ -574,7 +558,7 @@ export class MapDrawComponent implements OnInit {
 
 
   /*
-  *   Tooltip stuff
+  *   Navigation
   */
 
   goConfiguration() {
