@@ -1,8 +1,8 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
-import {LocalStorageService} from "../local-storage/local-storage.service";
-import {Router} from "@angular/router";
+import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
+import {LocalStorageService} from '../local-storage/local-storage.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-start',

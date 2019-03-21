@@ -26,7 +26,7 @@ export class StraightMenuComponent implements OnInit {
   }
 
   onDragEnded(evt) {
-    setTimeout(()=>{    //<<<---    using ()=> syntax
+    setTimeout(() => {
       this.isDragging = false;
     }, 500);
   }

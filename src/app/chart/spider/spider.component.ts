@@ -3,7 +3,7 @@ import {Chart} from 'angular-highcharts';
 import { Highcharts } from 'angular-highcharts';
 
 @Component({
-    selector: 'dash-spider',
+    selector: 'app-dash-spider',
     styles: [
         '.spiderHolder {height: 100%}'
     ],
@@ -16,7 +16,7 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
     *   To assure good height adjustation, please give the parent containers a 'height: 100%'
     */
     // spiderId = Math.random().toString(36).substring(2, 15);
-    @Input() spiderId:string;
+    @Input() spiderId: string;
 
     // Titles
     @Input() chartTitle = '';
@@ -49,7 +49,7 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
 
     private getSpiderChart(series) {
 
-        let data = (series instanceof Array ? series : [series]);
+        const data = (series instanceof Array ? series : [series]);
 
         return new Chart({
           chart: {
@@ -62,7 +62,7 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
           },
 
           title: {
-            text:'',
+            text: '',
             style : {
               display : 'none'
             }
@@ -111,12 +111,11 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
 
     chartClick = (event) => {
         this.clickOutput.emit(event);
-    };
+    }
 
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['series'] && !changes['series'].firstChange) {
-          console.log('changes')
             this.zone.run(() => {
                 this.spiderChart = this.getSpiderChart(changes['series'].currentValue);
             });
