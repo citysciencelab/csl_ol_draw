@@ -374,9 +374,13 @@ export class MapDrawComponent implements OnInit {
   mapDeleteHandler = (evt) => {
     const features = evt.map.getFeaturesAtPixel(evt.pixel);
     if (features && features.length > 0) {
-      const src: VectorSource = this.areaToSourceMap[this.selectedAreaType];
-      for (const feat of features) {
-        src.removeFeature(feat);
+      for (const areaCat of this.areaCategories) {
+        const src: VectorSource = this.areaToSourceMap[areaCat];
+        for (const feat of features) {
+          if (src.hasFeature(feat)) {
+            src.removeFeature(feat);
+          }
+        }
       }
     }
     this.saveData();
