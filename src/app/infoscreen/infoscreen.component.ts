@@ -113,7 +113,6 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.glMap.setZoom(this.glMap.getZoom() + 1);
-      // this.osmb.remove(this.contextBuildings);
     }
   }
 
@@ -122,12 +121,19 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
 
     const ist: number[] = [0, 0, 0];
     for (const feature of jsonData['features']) {
-      if (feature['properties']['buildingType'] === 'Wohnen') {
-        ist[0] += feature['properties']['area'];
-      } else if (feature['properties']['buildingType'] === 'Gewerbe') {
-        ist[1] += feature['properties']['area'];
-      } else if (feature['properties']['buildingType'] === 'Industrie') {
-        ist[2] += feature['properties']['area'];
+      switch (feature['properties']['buildingType']) {
+        case 'Wohnen': {
+          ist[0] += feature['properties']['area'];
+          break;
+        }
+        case 'Gewerbe': {
+          ist[1] += feature['properties']['area'];
+          break;
+        }
+        case 'Industrie': {
+          ist[2] += feature['properties']['area'];
+          break;
+        }
       }
     }
 
@@ -143,47 +149,55 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   }
 
   receiveMessage(message: LocalStorageMessage) {
-    if (message.type === 'tool-interaction') {
-      switch (message.data.name) {
-        case 'tool-start':
-          this.isToolStarted = true;
-          break;
-        case 'tool-reset':
-          this.isToolStarted = false;
-          break;
+    switch (message.type) {
+      case 'tool-interaction': {
+        switch (message.data.name) {
+          case 'tool-start':
+            this.isToolStarted = true;
+            break;
+          case 'tool-reset':
+            this.isToolStarted = false;
+            break;
+        }
+        break;
       }
-    } else if (message.type === 'tool-select-goals') {
-      this.zone.run(() => {
-        const newData = this.createAndUpdateSpiderData(this.spiderData[0]['data'], message.data.values);
-        this.spiderData = newData;
-      });
-    } else if (message.type === 'tool-new-buildings-json') {
-      this.zone.run(() => {
-        this.processBuildingData(message.data);
-      });
-    } else if (message.type === 'tool-context') {
-      this.zone.run(() => {
-        this.createBuildingContext();
-      });
-    } else if (message.type === 'tool-new-map-position') {
-      const currentPositon = this.glMap.getRotation();
-      if (currentPositon['latitude'] !== message.data[1] || currentPositon['longitude'] !== message.data[0]) {
-        this.glMap['position'] = {latitude: message.data[1], longitude: message.data[0]};
+      case 'tool-select-goals': {
+        this.zone.run(() => {
+          const newData = this.createAndUpdateSpiderData(this.spiderData[0]['data'], message.data.values);
+          this.spiderData = newData;
+        });
+        break;
       }
+      case 'tool-new-buildings-json': {
+        this.zone.run(() => {
+          this.processBuildingData(message.data);
+        });
+        break;
+      }
+      case 'tool-context': {
+        this.zone.run(() => {
+          this.createBuildingContext();
+        });
+        break;
+      }
+      case 'tool-new-map-position': {
+        const currentPositon = this.glMap.getRotation();
+        if (currentPositon['latitude'] !== message.data[1] || currentPositon['longitude'] !== message.data[0]) {
+          this.glMap['position'] = {latitude: message.data[1], longitude: message.data[0]};
+        }
 
-      const currentRotation = this.glMap.getRotation();
-      const degree = this.radians_to_degrees(message.data[2]) * -1;
-      if (degree !== currentRotation) {
-        this.glMap.setRotation(degree);
+        const currentRotation = this.glMap.getRotation();
+        const degree = this.radians_to_degrees(message.data[2]) * -1;
+        if (degree !== currentRotation) {
+          this.glMap.setRotation(degree);
+        }
+        break;
       }
     }
-
   }
 
   radians_to_degrees(radians) {
     const pi = Math.PI;
     return radians * (180 / pi);
   }
-
-
 }

@@ -215,32 +215,43 @@ export class MapDrawComponent implements OnInit {
   */
 
   public specialInfoView(menuOutput: Object[]) {
-    if (menuOutput[0] === 'drag') {
-      this.isDrag3d = !this.isDrag3d;
-    } else if (menuOutput[0] === 'context') {
-      this.startContextView();
-    } else if (menuOutput[0] === 'predefined') {
-      const newEventObject = [];
-      newEventObject['value'] = 'Predefined';
-      this.interactionSelect(newEventObject);
-    } else if (menuOutput[0] === 'saveData') {
-      // const blob = new Blob([this.savedData], {type: 'text/plain;charset=utf-8'});
-      // FileSaver.saveAs(blob, 'planner-design' + new Date().getMilliseconds() + '.txt');
-    } else if (menuOutput[0] === 'favData') {
-      const layout = new LayoutEntity();
-      layout.title = 'Design ' + new Date().getMilliseconds();
-      const clonedMAp = {};
-      Object.keys(this.areaToSourceMap).map( key => {
-        const src: VectorSource = this.areaToSourceMap[key];
-        const cloneSrc = new VectorSource({wrapX: false});
-        for (const featrue of src.getFeatures()) {
-          cloneSrc.addFeature(featrue.clone());
-        }
-        clonedMAp[key] = cloneSrc;
-      });
-      layout.mapData = clonedMAp;
-      this.layoutService.addLayout(layout);
-      this.openSnackBar('Data saved for comparison');
+    switch (menuOutput[0]) {
+      case 'drag': {
+        this.isDrag3d = !this.isDrag3d;
+        break;
+      }
+      case 'context': {
+        this.startContextView();
+        break;
+      }
+      case 'predefined': {
+        const newEventObject = [];
+        newEventObject['value'] = 'Predefined';
+        this.interactionSelect(newEventObject);
+        break;
+      }
+      case 'saveData': {
+        // const blob = new Blob([this.savedData], {type: 'text/plain;charset=utf-8'});
+        // FileSaver.saveAs(blob, 'planner-design' + new Date().getMilliseconds() + '.txt');
+        break;
+      }
+      case 'favData': {
+        const layout = new LayoutEntity();
+        layout.title = 'Design ' + new Date().getMilliseconds();
+        const clonedMAp = {};
+        Object.keys(this.areaToSourceMap).map( key => {
+          const src: VectorSource = this.areaToSourceMap[key];
+          const cloneSrc = new VectorSource({wrapX: false});
+          for (const featrue of src.getFeatures()) {
+            cloneSrc.addFeature(featrue.clone());
+          }
+          clonedMAp[key] = cloneSrc;
+        });
+        layout.mapData = clonedMAp;
+        this.layoutService.addLayout(layout);
+        this.openSnackBar('Data saved for comparison');
+        break;
+      }
     }
   }
 
@@ -280,18 +291,31 @@ export class MapDrawComponent implements OnInit {
       this.map.un('singleclick', this.mapCreateHandler);
     }
 
-    if (value === 'Draw') {
-      this.addDrawInteraction();
-    } else if (value === 'Modify') {
-      this.addModifyInteraction();
-    } else if (value === 'Move') {
-      this.addMoveInteraction();
-    } else if (value === 'Delete') {
-      this.addDeleteInteraction();
-    } else if (value === 'Select') {
-      this.addSelectInteraction();
-    } else if (value === 'Predefined') {
-      this.addCreateInteraction();
+    switch (value) {
+      case 'Draw': {
+        this.addDrawInteraction();
+        break;
+      }
+      case 'Modify': {
+        this.addModifyInteraction();
+        break;
+      }
+      case 'Move': {
+        this.addMoveInteraction();
+        break;
+      }
+      case 'Delete': {
+        this.addDeleteInteraction();
+        break;
+      }
+      case 'Select': {
+        this.addSelectInteraction();
+        break;
+      }
+      case 'Predefined': {
+        this.addCreateInteraction();
+        break;
+      }
     }
   }
 
@@ -321,7 +345,6 @@ export class MapDrawComponent implements OnInit {
     });
 
     iconFeature.setStyle(iconStyle);
-    // iconFeature.setPosition(coordinate);
     src.addFeature(iconFeature);
   }
 
@@ -398,7 +421,6 @@ export class MapDrawComponent implements OnInit {
   }
 
   addModifyInteraction() {
-    // const tempData = [];
     for (const area of this.areaCategories) {
       const interact = new Modify({
         source: this.areaToSourceMap[area]
@@ -408,7 +430,6 @@ export class MapDrawComponent implements OnInit {
       })
       this.map.addInteraction(interact);
     }
-    // this.interaction = interact;
   }
 
   addDrawInteraction() {
@@ -445,7 +466,6 @@ export class MapDrawComponent implements OnInit {
     const tempData = [];
     const format = new GeoJSON();
     for (const area of this.areaCategories) {
-      // this.savedData += format.writeFeatures(this.areaToSourceMap[area].getFeatures())
       for (const feature of this.areaToSourceMap[area].getFeatures()) {
         tempData.push(feature);
       }
