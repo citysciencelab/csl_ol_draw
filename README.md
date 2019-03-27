@@ -1,5 +1,7 @@
 # Open Layers Drawing
 
+## ![](https://user-images.githubusercontent.com/36763878/55071265-6ca46c00-5088-11e9-8abb-e13690288a63.gif)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.2.
 
 ## Installing
