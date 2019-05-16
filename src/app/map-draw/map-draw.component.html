@@ -15,4 +15,8 @@
     style="position: absolute; left: 10px; bottom: 10px; z-index: 50;"></app-drag-view-menu>
 
   <div id="olMap" class="map"></div>
+
+  <app-height-slider *ngIf="sliderDisplay" [currentHeight]="currentHeight" style="position: absolute"
+                     [style.top.px]="sliderTop" [style.left.px]="sliderLeft"
+                     (heightOutput)="setNewHeight($event)"></app-height-slider>
 </div>

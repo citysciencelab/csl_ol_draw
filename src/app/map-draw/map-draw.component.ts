@@ -47,6 +47,13 @@ export class MapDrawComponent implements OnInit {
   savedData = '';
   isDrag3d = false;
 
+  // Height slider values
+  currentHeight = 10;
+  sliderTop = 0;
+  sliderLeft = 0;
+  sliderDisplay = false;
+  heightFeature = {};
+
   savedDrafts = {};
 
   interaction = null;
@@ -376,17 +383,32 @@ export class MapDrawComponent implements OnInit {
         newSrc.dispatchEvent('change');
       } else if (this.interactionSpecifics === 'Height') {
         for (const feat of features) {
-          const height = feat.get('height');
+          const height = feat.get('height') ? feat.get('height') : 4;
           if (height) {
-            const newHeight = parseInt(height) + 35;
-            feat.set('height', newHeight + '');
+            // const newHeight = parseInt(height) + 35;
+            // feat.set('height', newHeight + '');
           } else {
             feat.set('height', '35');
           }
+
+          this.heightFeature = feat;
+          this.currentHeight = parseInt(height) / 4;
+          this.sliderDisplay = true;
+          this.sliderLeft = evt.mapBrowserEvent['pixel'][0];
+          this.sliderTop = evt.mapBrowserEvent['pixel'][1];
         }
+        this.map.on('click', this.mapClickHandler);
       }
       this.selectControl.getFeatures().clear();
     }
+    this.saveData();
+  }
+
+
+  mapClickHandler = (evt) => {
+    (this.heightFeature as Feature).set('height', this.currentHeight * 4);
+    this.sliderDisplay = false;
+    this.map.un('click', this.mapClickHandler);
     this.saveData();
   }
 
@@ -613,6 +635,10 @@ export class MapDrawComponent implements OnInit {
     this.snackBar.open(snackText, 'Saved', {
       duration: 2000,
     });
+  }
+
+  public setNewHeight(menuOutput: number) {
+    this.currentHeight = menuOutput;
   }
 
 }

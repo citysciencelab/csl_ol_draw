@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {LayoutEntity} from '../entity/layout.entity';
+import * as rxjs from 'rxjs/index';
 
 
 @Injectable()
 export class LayoutService {
 
   areaToSourceMapList = [];
+  public mapPosition = new rxjs.BehaviorSubject({});
 
   constructor() {
   }

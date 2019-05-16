@@ -27,6 +27,7 @@ import {SpiderComponent} from './chart/spider/spider.component';
 import {LineComponent} from './chart/line/line.component';
 import {LayoutService} from './services/layoutservice';
 import { CompareComponent } from './compare/compare.component';
+import { HeightSliderComponent } from './height-slider/height-slider.component';
 // import {LineComponent} from 'angular-dashboard-components/components/charts/line/line.component'
 
 export function highchartsModules() {
@@ -45,7 +46,8 @@ export function highchartsModules() {
     CircleMenuComponent,
     StraightMenuComponent,
     DragViewMenuComponent,
-    CompareComponent
+    CompareComponent,
+    HeightSliderComponent
   ],
   imports: [
     AppRoutingModule,

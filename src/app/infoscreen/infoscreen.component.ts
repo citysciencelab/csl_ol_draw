@@ -22,7 +22,8 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
   savedData = '';
 
   // List of buildings that are on the GB
-  tohideData = [23504940, 23504920, 174299051, 23504901, 174299050, 23505038, 23505278];
+  toHideData = [23504940, 23504920, 174299051, 23504901, 174299050, 23505038, 23505278, 679268197, 679268196,
+    679268202, 679268198, 679268194, 679268200, 679268206, 679268195, 679268204];
 
   // NOT hard coded!
   private areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
@@ -105,7 +106,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
 
       // This is hiding all Buildings on the Grasbrook
       this.osmb.hide(feature => {
-        for (const obj of this.tohideData) {
+        for (const obj of this.toHideData) {
           if (obj + '' === feature) {
             return 1;
           }
@@ -113,6 +114,11 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.glMap.setZoom(this.glMap.getZoom() + 1);
+      this.osmb.hide(feature => {
+        if (feature) {
+          return 1;
+        }
+      });
     }
   }
 

@@ -1,0 +1,15 @@
+<div id="height-slider">
+  <span>Storeys</span>
+  <br />
+  <mat-slider
+    (input)="onInputChange($event)"
+    style="width: 250px"
+    [max]="30"
+    [min]="1"
+    [step]="1"
+    [(ngModel)]="currentHeight"
+    [thumbLabel]="true">
+  </mat-slider>
+</div>
+
+
