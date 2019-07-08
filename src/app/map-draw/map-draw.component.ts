@@ -28,9 +28,10 @@ import {toLonLat} from 'ol/proj.js';
 import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
 import {LocalStorageService} from '../local-storage/local-storage.service';
 
-// import * as FileSaver from 'file-saver';
 import {LayoutService} from '../services/layoutservice';
 import {LayoutEntity} from '../entity/layout.entity';
+
+import * as autobahn from 'autobahn';
 
 @Component({
   selector: 'app-map-draw',
@@ -93,6 +94,11 @@ export class MapDrawComponent implements OnInit {
     strokeColor: '#ffff00'
   };
 
+  private wsuri = 'ws://csl.local.hcuhh.de:8081/ws';
+  private realm = 'cslrealm';
+
+  private connection: autobahn.Connection;
+
   constructor(private localStorageService: LocalStorageService,
               private layoutService: LayoutService,
               private zone: NgZone,
@@ -106,6 +112,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
+    this.initRemote();
   }
 
   initMap() {
@@ -509,6 +516,7 @@ export class MapDrawComponent implements OnInit {
       data: savedDataNew
     };
     this.localStorageService.sendMessage(message2);
+    this.sendRemoteJson(this.savedData);
   }
 
   /*
@@ -625,8 +633,6 @@ export class MapDrawComponent implements OnInit {
     this.localStorageService.sendMessage(message2);
   }
 
-
-
   /*
   *   Misc
   */
@@ -640,5 +646,30 @@ export class MapDrawComponent implements OnInit {
   public setNewHeight(menuOutput: number) {
     this.currentHeight = menuOutput;
   }
+
+  /*
+  *   Send data to WebSocket
+  */
+
+
+
+  initRemote() {
+    this.connection = new autobahn.Connection({url: this.wsuri, realm: this.realm});
+    this.connection.onopen = function (session, details) {
+      console.log('Connected');
+    };
+    this.connection.open();
+  }
+
+  // handleData = (data) => {
+  sendRemoteJson(data) {
+    if (this.connection.session) {
+      this.connection.session.publish('hcu.csl.grasbrook.json', [data]);
+      console.log('event published!');
+    } else {
+      console.log('cannot publish: no session');
+    }
+  }
+
 
 }
