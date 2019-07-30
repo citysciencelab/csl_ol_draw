@@ -1,41 +1,46 @@
-import {Component, OnInit, NgZone} from '@angular/core';
-import {Router} from '@angular/router';
-import {MatSnackBar} from '@angular/material';
+import { Component, OnInit, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import Feature from 'ol/Feature.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
-import {Style, Fill, Stroke, Circle, Icon} from 'ol/style.js';
+import { Style, Fill, Stroke, Circle, Icon } from 'ol/style.js';
 import Point from 'ol/geom/Point.js';
-import {defaults as defaultInteractions, DragRotateAndZoom} from 'ol/interaction.js';
+import { defaults as defaultInteractions, DragRotateAndZoom } from 'ol/interaction.js';
 import Select from 'ol/interaction/Select.js';
 import Draw from 'ol/interaction/Draw.js';
 import Modify from 'ol/interaction/Modify.js';
 import Move from 'ol/interaction/DragAndDrop.js';
 import Translate from 'ol/interaction/Translate.js';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
-import {OSM, Vector as VectorSource} from 'ol/source.js';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer.js';
+import { OSM, Vector as VectorSource } from 'ol/source.js';
 import Overlay from 'ol/Overlay.js';
-import {getArea, getLength} from 'ol/sphere.js';
-import {LineString, Polygon} from 'ol/geom.js';
-import {defaults as defaultControls, Control} from 'ol/control.js';
-import {click} from 'ol/events/condition.js';
+import { getArea, getLength } from 'ol/sphere.js';
+import { LineString, Polygon } from 'ol/geom.js';
+import { defaults as defaultControls, Control } from 'ol/control.js';
+import { click } from 'ol/events/condition.js';
 
-import {unByKey} from 'ol/Observable.js';
-import {fromLonLat} from 'ol/proj.js';
-import {toLonLat} from 'ol/proj.js';
+import { unByKey } from 'ol/Observable.js';
+import { fromLonLat } from 'ol/proj.js';
+import { toLonLat } from 'ol/proj.js';
 
-import {LocalStorageMessage} from '../local-storage/local-storage-message.model';
-import {LocalStorageService} from '../local-storage/local-storage.service';
+import { LocalStorageMessage } from '../local-storage/local-storage-message.model';
+import { LocalStorageService } from '../local-storage/local-storage.service';
 
 // import * as FileSaver from 'file-saver';
-import {LayoutService} from '../services/layoutservice';
-import {LayoutEntity} from '../entity/layout.entity';
+import { LayoutService } from '../services/layoutservice';
+import { LayoutEntity } from '../entity/layout.entity';
+
+import { DrawService } from '../draw.service';
+import { WebsocketService } from '../websocket.service';
+
 
 @Component({
   selector: 'app-map-draw',
   templateUrl: './map-draw.component.html',
-  styleUrls: ['./map-draw.component.less']
+  styleUrls: ['./map-draw.component.less'],
+  providers: [WebsocketService, DrawService]
 })
 export class MapDrawComponent implements OnInit {
 
@@ -93,11 +98,19 @@ export class MapDrawComponent implements OnInit {
     strokeColor: '#ffff00'
   };
 
+
+  /*
+  private wsuri = 'ws://csl.local.hcuhh.de:8081/ws';
+  private realm = 'cslrealm';
+
+  private connection: autobahn.Connection;
+  */
   constructor(private localStorageService: LocalStorageService,
-              private layoutService: LayoutService,
-              private zone: NgZone,
-              private router: Router,
-              public snackBar: MatSnackBar) {
+    private layoutService: LayoutService,
+    private zone: NgZone,
+    private router: Router,
+    public snackBar: MatSnackBar,
+    private draw: DrawService) {
     this.mapId = 'olMap';
   }
 
@@ -106,6 +119,13 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
+
+    this.draw.messages.subscribe(msg => {
+      console.log(msg);
+    })
+    /*
+ this.initRemote();
+    */
   }
 
   initMap() {
@@ -170,7 +190,7 @@ export class MapDrawComponent implements OnInit {
   // }
 
   private createAreaLayer(areaName: string, colorSheme: string[]) {
-    const source = new VectorSource({wrapX: false});
+    const source = new VectorSource({ wrapX: false });
 
     const vector = new VectorLayer({
       source: source,
@@ -246,9 +266,9 @@ export class MapDrawComponent implements OnInit {
         const layout = new LayoutEntity();
         layout.title = 'Design ' + new Date().getMilliseconds();
         const clonedMAp = {};
-        Object.keys(this.areaToSourceMap).map( key => {
+        Object.keys(this.areaToSourceMap).map(key => {
           const src: VectorSource = this.areaToSourceMap[key];
-          const cloneSrc = new VectorSource({wrapX: false});
+          const cloneSrc = new VectorSource({ wrapX: false });
           for (const featrue of src.getFeatures()) {
             cloneSrc.addFeature(featrue.clone());
           }
@@ -509,6 +529,9 @@ export class MapDrawComponent implements OnInit {
       data: savedDataNew
     };
     this.localStorageService.sendMessage(message2);
+    
+    this.sendMessage(this.savedData);
+  
   }
 
   /*
@@ -546,8 +569,10 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[this.selectedAreaType] += Number(this.measureTooltipElement.value);
     });
 
-    evt.feature.setProperties({isPart: false, buildingType: this.selectedAreaType, area: this.measureTooltipElement.value,
-      color: this.getCurrenTypeColor(this.selectedAreaType, 'fillColor')});
+    evt.feature.setProperties({
+      isPart: false, buildingType: this.selectedAreaType, area: this.measureTooltipElement.value,
+      color: this.getCurrenTypeColor(this.selectedAreaType, 'fillColor')
+    });
     this.measureTooltipElement.className = 'tooltip tooltip-static';
     this.measureTooltip.setOffset([0, -7]);
 
@@ -641,4 +666,32 @@ export class MapDrawComponent implements OnInit {
     this.currentHeight = menuOutput;
   }
 
+
+  sendMessage(msg) {
+    this.draw.sendMsg(msg);
+  }
+    /*
+  *   Send data to WebSocket
+  */
+
+/*
+
+ initRemote() {
+  this.connection = new autobahn.Connection({url: this.wsuri, realm: this.realm});
+  this.connection.onopen = function (session, details) {
+    console.log('Connected');
+  };
+  this.connection.open();
+}
+
+// handleData = (data) => {
+sendRemoteJson(data) {
+  if (this.connection.session) {
+    this.connection.session.publish('hcu.csl.grasbrook.json', [data]);
+    console.log('event published!');
+  } else {
+    console.log('cannot publish: no session');
+  }
+}
+*/
 }
