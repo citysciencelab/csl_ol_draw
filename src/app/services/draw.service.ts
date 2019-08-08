@@ -13,7 +13,7 @@ export class DrawService {
       .connect()
       .map((response: any): any => {
         return response;
-      })
+      });
    }
 
   // Our simplified interface for sending
@@ -21,5 +21,4 @@ export class DrawService {
   sendMsg(msg) {
     this.messages.next(msg);
   }
-
 }

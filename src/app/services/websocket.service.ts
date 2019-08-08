@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Observable } from 'rxjs/Observable';
+import {environment} from '../../environments/environment';
 import * as Rx from 'rxjs/Rx';
-import { environment } from '../environments/environment';
 
 @Injectable()
 export class WebsocketService {
@@ -19,20 +19,20 @@ export class WebsocketService {
 
     // We define our observable which will observe any incoming messages
     // from our socket.io server.
-    let observable = new Observable(observer => {
+    const observable_income = new Observable(observer => {
         this.socket.on('message', (data) => {
-          console.log("Received message from Websocket Server:"+data)
+          console.log('Received message from Websocket Server:' + data);
           observer.next(data);
-        })
+        });
         return () => {
           this.socket.disconnect();
-        }
+        };
     });
 
     // We define our Observer which will listen to messages
     // from our other components and send messages back to our
     // socket server whenever the `next()` method is called.
-    let observer = {
+    const observer_inbound = {
         next: (data: Object) => {
             this.socket.emit('message', JSON.stringify(data));
         },
@@ -40,7 +40,6 @@ export class WebsocketService {
 
     // we return our Rx.Subject which is a combination
     // of both an observer and observable.
-    return Rx.Subject.create(observer, observable);
+    return Rx.Subject.create(observer_inbound, observable_income);
   }
-
 }
