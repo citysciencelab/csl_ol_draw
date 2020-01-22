@@ -32,8 +32,8 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 import { LayoutService } from '../services/layoutservice';
 import { LayoutEntity } from '../entity/layout.entity';
 
-import { DrawService } from '../draw.service';
-import { WebsocketService } from '../websocket.service';
+import { DrawService } from '../services/draw.service';
+import { WebsocketService } from '../services/websocket.service';
 
 
 @Component({
