@@ -26,7 +26,7 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     679268202, 679268198, 679268194, 679268200, 679268206, 679268195, 679268204];
 
   // NOT hard coded!
-  private areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
+  private areaCategories = ['Residential', 'Commercial', 'Industrial'];
 
   constructor(private localStorageService: LocalStorageService,
               private zone: NgZone) {
@@ -128,15 +128,15 @@ export class InfoscreenComponent implements OnInit, AfterViewInit {
     const ist: number[] = [0, 0, 0];
     for (const feature of jsonData['features']) {
       switch (feature['properties']['buildingType']) {
-        case 'Wohnen': {
+        case 'Residential': {
           ist[0] += feature['properties']['area'];
           break;
         }
-        case 'Gewerbe': {
+        case 'Commercial': {
           ist[1] += feature['properties']['area'];
           break;
         }
-        case 'Industrie': {
+        case 'Industrial': {
           ist[2] += feature['properties']['area'];
           break;
         }

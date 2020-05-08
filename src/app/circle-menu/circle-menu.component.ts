@@ -20,7 +20,7 @@ export class CircleMenuComponent implements OnInit {
   ngOnInit() {
   }
 
-  menuItemClick(interActionType: string, interActionValue: string) {
+  menuItemClick(interActionType: string, interActionValue?: string) {
     if (interActionType === 'DeleteAll') {
       const selection: Object = [];
       selection['action'] = interActionType;

@@ -22,7 +22,7 @@ export class CompareComponent implements OnInit, AfterViewInit {
   private grasbrook = [10.013643732087715, 53.532553758257485];
   private initialZoom = 14;
   // Doppelte Speicherung - DO NOT DO THIS
-  areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
+  areaCategories = ['Residential', 'Commercial', 'Industrial'];
 
   constructor(
     private router: Router,

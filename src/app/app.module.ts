@@ -28,6 +28,9 @@ import {LineComponent} from './chart/line/line.component';
 import {LayoutService} from './services/layoutservice';
 import { CompareComponent } from './compare/compare.component';
 import { HeightSliderComponent } from './height-slider/height-slider.component';
+import {SocketServiceIO} from "./services/SocketServiceIO";
+import {ChatService} from "./services/ChatService";
+import {WebsocketService} from "./services/WebsocketService";
 // import {LineComponent} from 'angular-dashboard-components/components/charts/line/line.component'
 
 export function highchartsModules() {
@@ -69,6 +72,9 @@ export function highchartsModules() {
   providers: [
     LocalStorageService,
     LayoutService,
+    SocketServiceIO,
+    ChatService,
+    WebsocketService,
     {provide: HIGHCHARTS_MODULES, useFactory: highchartsModules },
   ],
   bootstrap: [AppComponent]

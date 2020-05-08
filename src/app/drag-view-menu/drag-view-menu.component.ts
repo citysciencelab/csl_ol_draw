@@ -40,4 +40,8 @@ export class DragViewMenuComponent implements OnInit {
     this.menuOutput.emit(['favData' , true]);
   }
 
+  setPrintMap() {
+    this.menuOutput.emit(['printMap' , true]);
+  }
+
 }

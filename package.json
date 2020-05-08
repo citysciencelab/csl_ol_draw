@@ -24,6 +24,7 @@
     "@angular/platform-browser-dynamic": "^6.1.10",
     "@angular/router": "^6.1.10",
     "angular-highcharts": "^6.1.4",
+    "autobahn": "^20.4.1",
     "bootstrap": "^4.0.0",
     "citygml-to-3dtiles": "0.0.9",
     "core-js": "^2.5.7",
@@ -31,11 +32,13 @@
     "highcharts": "^6.0.4",
     "jquery": "^1.9.1",
     "ngx-drag-scroll": "^2.0.4",
-    "ol": "^5.0.3",
+    "ol": "^6.3.1",
     "osmbuildings": "^0.2.0-b",
     "popper.js": "^1.14.3",
     "proj4": "^2.4.4",
-    "rxjs": "^6.3.3",
+    "rxjs": "^6.3.2",
+    "rxjs-compat": "^6.3.2",
+    "ws": "^7.2.5",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {

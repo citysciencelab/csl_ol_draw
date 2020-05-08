@@ -3,19 +3,24 @@
      (cdkDragEnded)="onDragEnded($event)"
      (cdkDragStarted)="onDragStart($event)">
   <input type="checkbox" id="menu" checked [attr.disabled]="isDragging ? '' : null">
-  <a href="javascript:void(0)" (click)="setBuildingType('Wohnen')"
-     matTooltipPosition="above" matTooltip="Residential"
-     [className]="selectedType === 'Wohnen' ? 'selected-item' : ''">
-    <i class="material-icons menu-icons" style="color: #90ee90">local_hotel</i>
+  <a href="javascript:void(0)" (click)="setBuildingType('Residential')"
+     matTooltipPosition="above" matTooltip="Background/White"
+     [className]="selectedType === 'Residential' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons" style="color: white">border_outer</i>
   </a>
-  <a href="javascript:void(0)" (click)="setBuildingType('Gewerbe')"
+  <a href="javascript:void(0)" (click)="setBuildingType('Commercial')"
      matTooltipPosition="above" matTooltip="Commercial"
-     [className]="selectedType === 'Gewerbe' ? 'selected-item' : ''">
-    <i class="material-icons menu-icons" style="color: #add8e6">domain</i>
+     [className]="selectedType === 'Commercial' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons" style="color: red">domain</i>
   </a>
-  <a href="javascript:void(0)" (click)="setBuildingType('Industrie')"
+  <a href="javascript:void(0)" (click)="setBuildingType('Industrial')"
      matTooltipPosition="above" matTooltip="Industrial "
-     [className]="selectedType === 'Industrie' ? 'selected-item' : ''">
-    <i class="material-icons menu-icons" style="color: #fafad2">location_city</i>
+     [className]="selectedType === 'Industrial' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons" style="color: green">nature_people</i>
+  </a>
+  <a href="javascript:void(0)" (click)="setBuildingType('Road')"
+     matTooltipPosition="above" matTooltip="Road "
+     [className]="selectedType === 'Road' ? 'selected-item' : ''">
+    <i class="material-icons menu-icons" style="color: black">local_movies</i>
   </a>
 </nav>

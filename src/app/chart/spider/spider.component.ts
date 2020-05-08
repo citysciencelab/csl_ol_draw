@@ -73,7 +73,7 @@ export class SpiderComponent implements OnChanges, OnInit, AfterViewChecked {
           },
 
           xAxis: {
-            categories: ['Wohnen', 'Gewerbe', 'Industrie'],
+            categories: ['Residential', 'Commercial', 'Industrial'],
             tickmarkPlacement: 'on',
             lineWidth: 0
           },

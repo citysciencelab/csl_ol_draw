@@ -14,12 +14,13 @@ import Modify from 'ol/interaction/Modify.js';
 import Move from 'ol/interaction/DragAndDrop.js';
 import Translate from 'ol/interaction/Translate.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
-import {OSM, Vector as VectorSource} from 'ol/source.js';
+import {OSM, XYZ, Vector as VectorSource} from 'ol/source.js';
 import Overlay from 'ol/Overlay.js';
 import {getArea, getLength} from 'ol/sphere.js';
 import {LineString, Polygon} from 'ol/geom.js';
 import {defaults as defaultControls, Control} from 'ol/control.js';
 import {click} from 'ol/events/condition.js';
+import { Observable } from 'rxjs/Observable';
 
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
@@ -31,6 +32,11 @@ import {LocalStorageService} from '../local-storage/local-storage.service';
 // import * as FileSaver from 'file-saver';
 import {LayoutService} from '../services/layoutservice';
 import {LayoutEntity} from '../entity/layout.entity';
+import {SocketServiceIO} from '../services/SocketServiceIO';
+import {ChatService} from '../services/ChatService';
+import { webSocket } from 'rxjs/webSocket';
+// const subject = webSocket('ws://localhost:8080');
+const subject = webSocket('ws://fierce-dawn-73363.herokuapp.com');
 
 @Component({
   selector: 'app-map-draw',
@@ -63,8 +69,8 @@ export class MapDrawComponent implements OnInit {
   selectedInteraction = 'Draw';
   interactionSpecifics = '';
   // interactions = ['Draw', 'Modify', 'Delete', 'Move'];
-  selectedAreaType = 'Gewerbe';
-  areaCategories = ['Wohnen', 'Gewerbe', 'Industrie'];
+  selectedAreaType = 'Commercial';
+  areaCategories = ['Residential', 'Commercial', 'Industrial', 'Road'];
 
   areaToSourceMap = {};
   areaSumMap = {};
@@ -79,21 +85,27 @@ export class MapDrawComponent implements OnInit {
   selectControl;
 
   livingStyle = {
-    fillColor: '#90ee90',
-    strokeColor: '#006400'
+    fillColor: '#ffffff',
+    strokeColor: '#ffffff'
   };
 
   officeStyle = {
-    fillColor: '#add8e6',
-    strokeColor: '#0000ff'
+    fillColor: '#FA1414',
+    strokeColor: '#FA1414'
   };
 
   industryStyle = {
-    fillColor: '#fafad2',
-    strokeColor: '#ffff00'
+    fillColor: '#55FE61',
+    strokeColor: '#55FE61'
+  };
+
+  roadStyle = {
+    fillColor: '#000000',
+    strokeColor: '#000000'
   };
 
   constructor(private localStorageService: LocalStorageService,
+              private chatService: ChatService,
               private layoutService: LayoutService,
               private zone: NgZone,
               private router: Router,
@@ -106,6 +118,28 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
+    this.initRemote();
+  }
+
+  initRemote() {
+    // subject.subscribe();
+    subject.subscribe(message => this.saveImage(message));
+    // subject.error({code: 4000, reason: 'I think our app just broke!'});
+// Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
+// since no connection was established!
+
+// This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
+    /**
+     subject.complete(); // Closes the connection.
+
+
+
+     this.chatService.messages.subscribe(msg => {
+       console.log('Response from websocket: ' + msg);
+     });
+     */
+    // const observable: Observable<string[]> = this.socketServiceIo.initSocket();
+    // observable.subscribe(this.handleData, this.handleError , this.handleComplete);
   }
 
   initMap() {
@@ -117,20 +151,25 @@ export class MapDrawComponent implements OnInit {
       rotation: 0
     });
 
-    const vectorWohnen = this.createAreaLayer('Wohnen', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']]);
-    const vectorGewerbe = this.createAreaLayer('Gewerbe', [this.officeStyle['fillColor'], this.officeStyle['strokeColor']]);
-    const vectorindustrie = this.createAreaLayer('Industrie', [this.industryStyle['fillColor'], this.industryStyle['strokeColor']]);
+    const vectorResidential = this.createAreaLayer('Residential', [this.livingStyle['fillColor'], this.livingStyle['strokeColor']], 0);
+    const vectorCommercial = this.createAreaLayer('Commercial', [this.officeStyle['fillColor'], this.officeStyle['strokeColor']], 1);
+    const vectorIndustrial = this.createAreaLayer('Industrial', [this.industryStyle['fillColor'], this.industryStyle['strokeColor']], 2);
+    const vectorRoads = this.createAreaLayer('Road', [this.roadStyle['fillColor'], this.roadStyle['strokeColor']], 3, 5);
 
+    // Western: https://api.mapbox.com/styles/v1/csill/cjpwhwmb9128d2rojvp5ilpx6.html?fresh=true&title=copy
+    // Mete: https://api.mapbox.com/styles/v1/meteboncukcu/ck74rfpnp07z01iqjzp0ranzq
     const raster = new TileLayer({
-      source: new OSM({
-        'url': 'http://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+      source: new XYZ({
+        url: 'https://api.mapbox.com/styles/v1/meteboncukcu/ck74rfpnp07z01iqjzp0ranzq/tiles/256/{z}/{x}/{y}?access_token=' +
+          'pk.eyJ1IjoibWV0ZWJvbmN1a2N1IiwiYSI6ImNrNjd5cm83bDFkb2kzcG83MHo0Ymtjam4ifQ.xcAWLWrwQ7Y18dAaWGVdpQ',
+        crossOrigin: 'Anonymous'
       })
-    });
+    })
 
     this.map = new Map({
       target: this.mapId,
       layers: [
-        raster, vectorGewerbe, vectorWohnen, vectorindustrie
+        raster, vectorCommercial, vectorResidential, vectorIndustrial, vectorRoads
       ],
       controls: defaultControls({
         zoom: false,
@@ -156,25 +195,14 @@ export class MapDrawComponent implements OnInit {
     }
   }
 
-  // TODO: areaToSourceMap muss ersetzt werden. Die unterschiedlichen Layer werden über die Stylefunction geregelt.
-  // new ol.layer.Vector({
-  //                       source: source,
-  //                       style: styleFunction
-  //                     });
-  //
-  // function styleFunction(feature, resolution) {
-  //   var bType = feature.get('buildingType');
-  //   if (bType === "Wohnen") {
-  //     return this.livingStyle;
-  // } else
-  // }
 
-  private createAreaLayer(areaName: string, colorSheme: string[]) {
+  private createAreaLayer(areaName: string, colorSheme: string[], zIndex, strokeWidth?: number) {
     const source = new VectorSource({wrapX: false});
 
     const vector = new VectorLayer({
       source: source,
-      opacity: 0.5,
+      opacity: 1,
+      zIndex: zIndex,
       style: new Style({
         fill: new Fill({
           color: colorSheme[0],
@@ -182,7 +210,7 @@ export class MapDrawComponent implements OnInit {
         }),
         stroke: new Stroke({
           color: colorSheme[1],
-          width: 1
+          width: strokeWidth ? strokeWidth : 1
         }),
         image: new Circle({
           radius: 7,
@@ -198,12 +226,14 @@ export class MapDrawComponent implements OnInit {
   }
 
   public getCurrenTypeColor(buildingType: string, colorType: string) {
-    if (buildingType === 'Wohnen') {
+    if (buildingType === 'Residential') {
       return this.livingStyle[colorType];
-    } else if (buildingType === 'Gewerbe') {
+    } else if (buildingType === 'Commercial') {
       return this.officeStyle[colorType];
-    } else if (buildingType === 'Industrie') {
+    } else if (buildingType === 'Industrial') {
       return this.industryStyle[colorType];
+    } else if (buildingType === 'Road') {
+      return this.roadStyle[colorType];
     }
   }
 
@@ -257,6 +287,10 @@ export class MapDrawComponent implements OnInit {
         layout.mapData = clonedMAp;
         this.layoutService.addLayout(layout);
         this.openSnackBar('Data saved for comparison');
+        break;
+      }
+      case 'printMap': {
+        this.exportMapImage();
         break;
       }
     }
@@ -457,7 +491,7 @@ export class MapDrawComponent implements OnInit {
   addDrawInteraction() {
     const draw = new Draw({
       source: this.areaToSourceMap[this.selectedAreaType],
-      type: this.selectedDrawOption
+      type: this.selectedAreaType === 'Road' ? 'LineString' : this.selectedDrawOption
     });
     this.map.addInteraction(draw);
     this.interaction = draw;
@@ -639,6 +673,99 @@ export class MapDrawComponent implements OnInit {
 
   public setNewHeight(menuOutput: number) {
     this.currentHeight = menuOutput;
+  }
+
+  exportMapImage = () => {
+    this.map.once('rendercomplete', function() {
+      const mapCanvas = document.createElement('canvas');
+      mapCanvas.setAttribute('crossorigin', 'anonymous');
+      const size = this.getSize();
+      mapCanvas.width = size[0];
+      mapCanvas.height = size[1];
+      const mapContext = mapCanvas.getContext('2d');
+      Array.prototype.forEach.call(document.querySelectorAll('.ol-layer canvas'), function(canvas) {
+        if (canvas.width > 0) {
+          const opacity = canvas.parentNode.style.opacity;
+          mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+          const transform = canvas.style.transform;
+          // Get the transform parameters from the style's transform matrix
+          const matrix = transform.match(/^matrix\(([^\(]*)\)$/)[1].split(',').map(Number);
+          // Apply the transform to the export map context
+          CanvasRenderingContext2D.prototype.setTransform.apply(mapContext, matrix);
+          mapContext.drawImage(canvas, 0, 0);
+        }
+      });
+      if (navigator.msSaveBlob) {
+        // link download attribute does not work on MS browsers
+        navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
+      } else {
+        /**
+         const cropCanvas = document.createElement('canvas');
+         cropCanvas.width = 512;
+         cropCanvas.height = 512;
+         const cropContext = cropCanvas.getContext('2d');
+         cropContext.drawImage(mapCanvas, 0, 0, 512, 512, 0, 0, 512, 512);
+         */
+
+        // const link: HTMLElement = document.getElementById('image-download');
+        // link['href'] = mapCanvas.toDataURL();
+        // link['href'] = cropCanvas.toDataURL();
+        // link.click();
+
+        const link: HTMLElement = document.getElementById('image-download');
+        link['href'] = mapCanvas.toDataURL();
+        // link.click();
+        // this.sendPictureMessage(mapCanvas.toDataURL());
+        subject.next({'image': mapCanvas.toDataURL()});
+        // subject.next({'message': 'dddjd'});
+      }
+    });
+    this.map.renderSync();
+  }
+
+  /*
+ *Remote cosi
+ */
+
+  saveImage(resultJson) {
+    const link: HTMLElement = document.getElementById('image_result');
+    let result = resultJson.hasOwnProperty('image') ? resultJson['image'] : resultJson['message'];
+    if (result.indexOf('base64') > -1) {
+      link['src'] = result;
+    } else {
+      result = result.replace('b\'', '');
+      result = result.replace('\'', '');
+      link['src'] = 'data:image/gif;base64,' + result;
+    }
+
+  }
+
+  sendPictureMessage(base64: string) {
+    subject.next({message: base64});
+  }
+
+  sendMsg() {
+    const message = {
+      author: 'tutorialedge',
+      message: 'this is a test message'
+    };
+    console.log('new message from client to websocket: ', message);
+    this.chatService.messages.next(message);
+    message.message = '';
+  }
+
+  handleData = (data) => {
+    console.log('Received Autobahn mesage', data);
+
+  }
+
+  handleComplete = () => {
+    console.log('Complete');
+  }
+
+  handleError = (error) => {
+    console.log('error:', error);
+    return Observable.throw(error);
   }
 
 }
