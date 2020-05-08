@@ -20,7 +20,6 @@ import {getArea, getLength} from 'ol/sphere.js';
 import {LineString, Polygon} from 'ol/geom.js';
 import {defaults as defaultControls, Control} from 'ol/control.js';
 import {click} from 'ol/events/condition.js';
-import { Observable } from 'rxjs/Observable';
 
 import {unByKey} from 'ol/Observable.js';
 import {fromLonLat} from 'ol/proj.js';
@@ -32,11 +31,7 @@ import {LocalStorageService} from '../local-storage/local-storage.service';
 // import * as FileSaver from 'file-saver';
 import {LayoutService} from '../services/layoutservice';
 import {LayoutEntity} from '../entity/layout.entity';
-import {SocketServiceIO} from '../services/SocketServiceIO';
 import {ChatService} from '../services/ChatService';
-import { webSocket } from 'rxjs/webSocket';
-// const subject = webSocket('ws://localhost:8080');
-const subject = webSocket('ws://fierce-dawn-73363.herokuapp.com');
 
 @Component({
   selector: 'app-map-draw',
@@ -122,24 +117,9 @@ export class MapDrawComponent implements OnInit {
   }
 
   initRemote() {
-    // subject.subscribe();
-    subject.subscribe(message => this.saveImage(message));
-    // subject.error({code: 4000, reason: 'I think our app just broke!'});
-// Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
-// since no connection was established!
-
-// This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
-    /**
-     subject.complete(); // Closes the connection.
-
-
-
      this.chatService.messages.subscribe(msg => {
        console.log('Response from websocket: ' + msg);
      });
-     */
-    // const observable: Observable<string[]> = this.socketServiceIo.initSocket();
-    // observable.subscribe(this.handleData, this.handleError , this.handleComplete);
   }
 
   initMap() {
@@ -676,6 +656,7 @@ export class MapDrawComponent implements OnInit {
   }
 
   exportMapImage = () => {
+    const that = this;
     this.map.once('rendercomplete', function() {
       const mapCanvas = document.createElement('canvas');
       mapCanvas.setAttribute('crossorigin', 'anonymous');
@@ -715,17 +696,18 @@ export class MapDrawComponent implements OnInit {
         const link: HTMLElement = document.getElementById('image-download');
         link['href'] = mapCanvas.toDataURL();
         // link.click();
-        // this.sendPictureMessage(mapCanvas.toDataURL());
-        subject.next({'image': mapCanvas.toDataURL()});
-        // subject.next({'message': 'dddjd'});
+        that.sendPicture({'image': mapCanvas.toDataURL()});
       }
     });
     this.map.renderSync();
   }
 
   /*
- *Remote cosi
+ *  Remote
  */
+  sendPicture = (data) => {
+    this.chatService.messages.next(data);
+  }
 
   saveImage(resultJson) {
     const link: HTMLElement = document.getElementById('image_result');
@@ -739,33 +721,4 @@ export class MapDrawComponent implements OnInit {
     }
 
   }
-
-  sendPictureMessage(base64: string) {
-    subject.next({message: base64});
-  }
-
-  sendMsg() {
-    const message = {
-      author: 'tutorialedge',
-      message: 'this is a test message'
-    };
-    console.log('new message from client to websocket: ', message);
-    this.chatService.messages.next(message);
-    message.message = '';
-  }
-
-  handleData = (data) => {
-    console.log('Received Autobahn mesage', data);
-
-  }
-
-  handleComplete = () => {
-    console.log('Complete');
-  }
-
-  handleError = (error) => {
-    console.log('error:', error);
-    return Observable.throw(error);
-  }
-
 }
