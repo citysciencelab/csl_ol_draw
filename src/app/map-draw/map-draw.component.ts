@@ -679,7 +679,6 @@ export class MapDrawComponent implements OnInit {
         const numberOfCanvases = parseInt((mapCanvas.width / 512) + '', null);
         const borderLeft = (mapCanvas.width % 512) / 2;
         const borderTop = (mapCanvas.height % 512) / 2;
-
         const imageTime = Date.now();
 
         for (let i = 0; i < numberOfCanvases; i++) {
@@ -696,27 +695,12 @@ export class MapDrawComponent implements OnInit {
             , 'coordinatesTL': lonLatTL, 'coordinatesBR': lonLatBR});
         }
 
-        /**
-         const cropCanvas = document.createElement('canvas');
-         cropCanvas.width = 512;
-         cropCanvas.height = 512;
-         const cropContext = cropCanvas.getContext('2d');
-         cropContext.drawImage(mapCanvas, 0, 0, 512, 512, 0, 0, 512, 512);
-         */
-
-        // const link: HTMLElement = document.getElementById('image-download');
-        // link['href'] = mapCanvas.toDataURL();
-        // link['href'] = cropCanvas.toDataURL();
-        // link.click();
-
-        let imageIndex = 0;
         for (const imageData of imageArray) {
-          that.sendPicture(imageData);
-          imageIndex++;
           /** const link: HTMLElement = document.getElementById('image-download');
           link['href'] = cropImgString;
           link.click(); **/
         }
+        that.sendDataArrayWithDelay(imageArray);
       }
     });
     this.map.renderSync();
@@ -726,8 +710,22 @@ export class MapDrawComponent implements OnInit {
  *  Remote
  */
 
-  sendPicture = (data) => {
-    // this.chatService.messages.next(data);
+  async sendDataArrayWithDelay(imageArray) {
+    console.log('Sending a total of: ' + imageArray.length + ' images');
+    for (const imageData of imageArray) {
+      console.log('picture sent');
+      this.chatService.messages.next(imageData);
+      await this.sleep(3000);
+    }
+  }
+
+  sleep(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
+  sendData = (data) => {
+    console.log('picture sent');
+    this.chatService.messages.next(data);
   }
 
 }

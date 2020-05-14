@@ -36,7 +36,9 @@ export class ImageResultsScreenComponent implements OnInit {
         const resultImage = this.imageResult[0];
         // for (const resultImage of this.imageResult) {
         if (resultImage.hasOwnProperty('cropTime') && newImage.hasOwnProperty('cropTime')) {
-          if (resultImage['cropTime'] !== newImage['cropTime']) {
+          const cropTime = resultImage['cropTime'];
+          const imageTime = cropTime.substring(0, cropTime.indexOf('-'));
+          if (!newImage['cropTime'].startsWith(imageTime)) {
             this.imageResult = [];
           }
           this.imageResult.push(newImage);
