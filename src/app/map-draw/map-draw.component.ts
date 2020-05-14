@@ -675,10 +675,13 @@ export class MapDrawComponent implements OnInit {
         navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
       } else {
         const cropImageDim = 512;
-        const imageArray: string[] = [];
+        const imageArray: object[] = [];
         const numberOfCanvases = parseInt((mapCanvas.width / 512) + '', null);
         const borderLeft = (mapCanvas.width % 512) / 2;
         const borderTop = (mapCanvas.height % 512) / 2;
+
+        const imageTime = Date.now();
+
         for (let i = 0; i < numberOfCanvases; i++) {
           const cropCanvas = document.createElement('canvas');
           cropCanvas.width = cropImageDim;
@@ -686,7 +689,11 @@ export class MapDrawComponent implements OnInit {
           const cropContext = cropCanvas.getContext('2d');
           cropContext.drawImage(mapCanvas, borderLeft + cropImageDim * i, borderTop
             , 512, 512, 0, 0, 512, 512);
-          imageArray.push(cropCanvas.toDataURL());
+          const lonLatTL = toLonLat(that.map.getCoordinateFromPixel([borderLeft + cropImageDim * i, borderTop]));
+          const lonLatBR = toLonLat(that.map.getCoordinateFromPixel([cropImageDim + borderLeft + cropImageDim * i
+            , cropImageDim + borderTop]));
+          imageArray.push({'cropTime': imageTime + '-' + i, 'image': cropCanvas.toDataURL()
+            , 'coordinatesTL': lonLatTL, 'coordinatesBR': lonLatBR});
         }
 
         /**
@@ -702,15 +709,13 @@ export class MapDrawComponent implements OnInit {
         // link['href'] = cropCanvas.toDataURL();
         // link.click();
 
-
-        const imageTime = Date.now();
-        for (const cropImgString of imageArray) {
-          that.sendPicture({'cropTime': imageTime, 'image': cropImgString});
-          /**
-          const link: HTMLElement = document.getElementById('image-download');
+        let imageIndex = 0;
+        for (const imageData of imageArray) {
+          that.sendPicture(imageData);
+          imageIndex++;
+          /** const link: HTMLElement = document.getElementById('image-download');
           link['href'] = cropImgString;
-          link.click();
-           **/
+          link.click(); **/
         }
       }
     });
@@ -722,7 +727,7 @@ export class MapDrawComponent implements OnInit {
  */
 
   sendPicture = (data) => {
-    this.chatService.messages.next(data);
+    // this.chatService.messages.next(data);
   }
 
 }
