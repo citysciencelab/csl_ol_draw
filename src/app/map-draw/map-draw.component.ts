@@ -99,6 +99,7 @@ export class MapDrawComponent implements OnInit {
     strokeColor: '#000000'
   };
 
+
   constructor(private localStorageService: LocalStorageService,
               private chatService: ChatService,
               private layoutService: LayoutService,
@@ -113,13 +114,6 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
-    this.initRemote();
-  }
-
-  initRemote() {
-     this.chatService.messages.subscribe(msg => {
-       console.log('Response from websocket: ' + msg);
-     });
   }
 
   initMap() {
@@ -680,6 +674,21 @@ export class MapDrawComponent implements OnInit {
         // link download attribute does not work on MS browsers
         navigator.msSaveBlob(mapCanvas.msToBlob(), 'map.png');
       } else {
+        const cropImageDim = 512;
+        const imageArray: string[] = [];
+        const numberOfCanvases = parseInt((mapCanvas.width / 512) + '', null);
+        const borderLeft = (mapCanvas.width % 512) / 2;
+        const borderTop = (mapCanvas.height % 512) / 2;
+        for (let i = 0; i < numberOfCanvases; i++) {
+          const cropCanvas = document.createElement('canvas');
+          cropCanvas.width = cropImageDim;
+          cropCanvas.height = cropImageDim;
+          const cropContext = cropCanvas.getContext('2d');
+          cropContext.drawImage(mapCanvas, borderLeft + cropImageDim * i, borderTop
+            , 512, 512, 0, 0, 512, 512);
+          imageArray.push(cropCanvas.toDataURL());
+        }
+
         /**
          const cropCanvas = document.createElement('canvas');
          cropCanvas.width = 512;
@@ -693,10 +702,16 @@ export class MapDrawComponent implements OnInit {
         // link['href'] = cropCanvas.toDataURL();
         // link.click();
 
-        const link: HTMLElement = document.getElementById('image-download');
-        link['href'] = mapCanvas.toDataURL();
-        // link.click();
-        that.sendPicture({'image': mapCanvas.toDataURL()});
+
+        const imageTime = Date.now();
+        for (const cropImgString of imageArray) {
+          that.sendPicture({'cropTime': imageTime, 'image': cropImgString});
+          /**
+          const link: HTMLElement = document.getElementById('image-download');
+          link['href'] = cropImgString;
+          link.click();
+           **/
+        }
       }
     });
     this.map.renderSync();
@@ -705,20 +720,9 @@ export class MapDrawComponent implements OnInit {
   /*
  *  Remote
  */
+
   sendPicture = (data) => {
     this.chatService.messages.next(data);
   }
 
-  saveImage(resultJson) {
-    const link: HTMLElement = document.getElementById('image_result');
-    let result = resultJson.hasOwnProperty('image') ? resultJson['image'] : resultJson['message'];
-    if (result.indexOf('base64') > -1) {
-      link['src'] = result;
-    } else {
-      result = result.replace('b\'', '');
-      result = result.replace('\'', '');
-      link['src'] = 'data:image/gif;base64,' + result;
-    }
-
-  }
 }

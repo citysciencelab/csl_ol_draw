@@ -30,6 +30,8 @@ import { CompareComponent } from './compare/compare.component';
 import { HeightSliderComponent } from './height-slider/height-slider.component';
 import {ChatService} from './services/ChatService';
 import {WebsocketService} from './services/WebsocketService';
+import { ImageResultsComponent } from './image-results/image-results.component';
+import { ImageResultsScreenComponent } from './image-results-screen/image-results-screen.component';
 // import {LineComponent} from 'angular-dashboard-components/components/charts/line/line.component'
 
 export function highchartsModules() {
@@ -49,7 +51,9 @@ export function highchartsModules() {
     StraightMenuComponent,
     DragViewMenuComponent,
     CompareComponent,
-    HeightSliderComponent
+    HeightSliderComponent,
+    ImageResultsComponent,
+    ImageResultsScreenComponent
   ],
   imports: [
     AppRoutingModule,

@@ -4,6 +4,7 @@ import {MapDrawComponent} from './map-draw/map-draw.component';
 import {StartComponent} from './start/start.component';
 import {InfoscreenComponent} from './infoscreen/infoscreen.component';
 import {CompareComponent} from './compare/compare.component';
+import {ImageResultsScreenComponent} from './image-results-screen/image-results-screen.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/draw', pathMatch: 'full' },
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'draw', component: MapDrawComponent },
   // { path: 'draw', component: MapDrawComponent, data: { state: 'draw' } },
   { path: 'infoscreen', component: InfoscreenComponent},
+  { path: 'imageresults', component: ImageResultsScreenComponent},
   { path: 'compare', component: CompareComponent},
 ];
 

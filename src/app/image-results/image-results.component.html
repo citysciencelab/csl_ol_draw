@@ -1,0 +1,15 @@
+<div  id="image_result">
+  <div *ngIf="resultImages?.length > 0; else elseBlock">
+    <div *ngFor="let image of resultImages">
+      <img [src]="image['srcData']">
+    </div>
+  </div>
+  <ng-template #elseBlock>
+    <div class="waiting">
+      <h2>
+        Waiting for results ....
+      </h2>
+    </div>
+  </ng-template>
+
+</div>
