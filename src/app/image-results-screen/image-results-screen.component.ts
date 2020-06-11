@@ -25,9 +25,11 @@ export class ImageResultsScreenComponent implements OnInit {
   }
 
   createImageCollection(newImage: object) {
-    if (newImage !== null) {
+    if (newImage !== null && newImage.hasOwnProperty('resultImage')) {
       if (newImage['image'].indexOf('base64') === -1) {
         newImage['image'] = 'data:image/gif;base64,' + newImage['resultImage'];
+      } else {
+        newImage['image'] = newImage['resultImage'];
       }
       // const srcData: SafeResourceUrl = this.sanitizer.bypassSecurityTrustStyle(newImage['image']);
       // newImage['srcData'] = srcData['changingThisBreaksApplicationSecurity'];
