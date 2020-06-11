@@ -652,6 +652,7 @@ export class MapDrawComponent implements OnInit {
   exportMapImage = () => {
     const that = this;
     this.map.once('rendercomplete', function() {
+      const imageTime = Date.now();
       const mapCanvas = document.createElement('canvas');
       mapCanvas.setAttribute('crossorigin', 'anonymous');
       const size = this.getSize();
@@ -679,7 +680,6 @@ export class MapDrawComponent implements OnInit {
         const numberOfCanvases = parseInt((mapCanvas.width / 512) + '', null);
         const borderLeft = (mapCanvas.width % 512) / 2;
         const borderTop = (mapCanvas.height % 512) / 2;
-        const imageTime = Date.now();
 
         for (let i = 0; i < numberOfCanvases; i++) {
           const cropCanvas = document.createElement('canvas');
@@ -691,9 +691,12 @@ export class MapDrawComponent implements OnInit {
           const lonLatTL = toLonLat(that.map.getCoordinateFromPixel([borderLeft + cropImageDim * i, borderTop]));
           const lonLatBR = toLonLat(that.map.getCoordinateFromPixel([cropImageDim + borderLeft + cropImageDim * i
             , cropImageDim + borderTop]));
-          imageArray.push({'cropTime': imageTime + '-' + i, 'image': cropCanvas.toDataURL()
+          imageArray.push({'folderName': imageTime + '', 'cropTime': imageTime + '-' + i, 'image': cropCanvas.toDataURL()
             , 'coordinatesTL': lonLatTL, 'coordinatesBR': lonLatBR});
         }
+
+        // Now we add the success method to make the server process the images
+        imageArray.push({'folderName': imageTime + '', 'imageDone': true})
 
         for (const imageData of imageArray) {
           /** const link: HTMLElement = document.getElementById('image-download');
@@ -717,6 +720,7 @@ export class MapDrawComponent implements OnInit {
       this.chatService.messages.next(imageData);
       await this.sleep(3000);
     }
+    console.log('done');
   }
 
   sleep(milliseconds) {

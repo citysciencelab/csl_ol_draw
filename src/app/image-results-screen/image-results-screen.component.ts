@@ -19,6 +19,7 @@ export class ImageResultsScreenComponent implements OnInit {
 
   initRemote() {
     this.chatService.messages.subscribe(msg => {
+      console.log('received results')
       this.createImageCollection(msg);
     });
   }
