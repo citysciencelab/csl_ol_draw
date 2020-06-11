@@ -19,17 +19,20 @@ export class ImageResultsScreenComponent implements OnInit {
 
   initRemote() {
     this.chatService.messages.subscribe(msg => {
-      console.log('received results')
+      console.log('msg received');
       this.createImageCollection(msg);
     });
   }
 
   createImageCollection(newImage: object) {
-    if (newImage !== null && newImage.hasOwnProperty('resultImage')) {
-      if (newImage['image'].indexOf('base64') === -1) {
-        newImage['image'] = 'data:image/gif;base64,' + newImage['resultImage'];
+    if (newImage !== null && newImage.hasOwnProperty('imageResult') &&
+      newImage.hasOwnProperty('cropTime') && newImage['cropTime'].endsWith('-1')) {
+      console.log('image received');
+
+      if (newImage['imageResult'].indexOf('base64') === -1) {
+        newImage['image'] = 'data:image/gif;base64,' + newImage['imageResult'];
       } else {
-        newImage['image'] = newImage['resultImage'];
+        newImage['image'] = newImage['imageResult'];
       }
       // const srcData: SafeResourceUrl = this.sanitizer.bypassSecurityTrustStyle(newImage['image']);
       // newImage['srcData'] = srcData['changingThisBreaksApplicationSecurity'];
