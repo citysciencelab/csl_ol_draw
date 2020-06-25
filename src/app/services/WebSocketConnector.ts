@@ -4,11 +4,9 @@ import {Subject} from 'rxjs/Subject';
 import {WebsocketService} from './WebsocketService';
 
 const CHAT_URL = 'ws://fierce-dawn-73363.herokuapp.com';
-// For local testing
-// const CHAT_URL = 'ws://localhost:8080';
 
 @Injectable()
-export class ChatService implements OnInit {
+export class WebSocketConnector {
   public messages: Subject<object>;
 
   constructor(private wsService: WebsocketService) {
@@ -20,6 +18,4 @@ export class ChatService implements OnInit {
       }));
   }
 
-  ngOnInit() {
-  }
 }

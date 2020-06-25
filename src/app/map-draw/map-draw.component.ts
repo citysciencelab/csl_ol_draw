@@ -31,7 +31,7 @@ import {LocalStorageService} from '../local-storage/local-storage.service';
 // import * as FileSaver from 'file-saver';
 import {LayoutService} from '../services/layoutservice';
 import {LayoutEntity} from '../entity/layout.entity';
-import {ChatService} from '../services/ChatService';
+import {WebSocketConnector} from '../services/WebSocketConnector';
 
 @Component({
   selector: 'app-map-draw',
@@ -101,7 +101,7 @@ export class MapDrawComponent implements OnInit {
 
 
   constructor(private localStorageService: LocalStorageService,
-              private chatService: ChatService,
+              private chatService: WebSocketConnector,
               private layoutService: LayoutService,
               private zone: NgZone,
               private router: Router,
@@ -114,6 +114,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
+    this.initRemoteResultListener();
   }
 
   initMap() {
@@ -714,6 +715,11 @@ export class MapDrawComponent implements OnInit {
  */
 
   async sendDataArrayWithDelay(imageArray) {
+    const message2: LocalStorageMessage = {
+      type: 'draw-sent',
+      data: true
+    };
+    this.localStorageService.sendMessage(message2);
     console.log('Sending a total of: ' + imageArray.length + ' images');
     for (const imageData of imageArray) {
       console.log('picture sent');
@@ -730,6 +736,17 @@ export class MapDrawComponent implements OnInit {
   sendData = (data) => {
     console.log('picture sent');
     this.chatService.messages.next(data);
+  }
+
+  initRemoteResultListener() {
+    this.chatService.messages.subscribe(msg => {
+      console.log('msg received');
+      const message2: LocalStorageMessage = {
+        type: 'draw-image',
+        data: msg
+      };
+      this.localStorageService.sendMessage(message2);
+    });
   }
 
 }

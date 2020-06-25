@@ -28,7 +28,7 @@ import {LineComponent} from './chart/line/line.component';
 import {LayoutService} from './services/layoutservice';
 import { CompareComponent } from './compare/compare.component';
 import { HeightSliderComponent } from './height-slider/height-slider.component';
-import {ChatService} from './services/ChatService';
+import {WebSocketConnector} from './services/WebSocketConnector';
 import {WebsocketService} from './services/WebsocketService';
 import { ImageResultsComponent } from './image-results/image-results.component';
 import { ImageResultsScreenComponent } from './image-results-screen/image-results-screen.component';
@@ -75,7 +75,7 @@ export function highchartsModules() {
   providers: [
     LocalStorageService,
     LayoutService,
-    ChatService,
+    WebSocketConnector,
     WebsocketService,
     {provide: HIGHCHARTS_MODULES, useFactory: highchartsModules },
   ],

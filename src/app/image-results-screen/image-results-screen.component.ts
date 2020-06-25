@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ChatService} from '../services/ChatService';
+import {WebSocketConnector} from '../services/WebSocketConnector';
+import {LocalStorageService} from "../local-storage/local-storage.service";
+import {LocalStorageMessage} from "../local-storage/local-storage-message.model";
 
 @Component({
   selector: 'app-image-results-screen',
@@ -9,12 +11,32 @@ import {ChatService} from '../services/ChatService';
 export class ImageResultsScreenComponent implements OnInit {
 
   imageResult: object[] = [];
+  isImagesSent = false;
 
-  constructor(private chatService: ChatService) {
+  constructor(private localStorageService: LocalStorageService,
+              private chatService: WebSocketConnector) {
   }
 
   ngOnInit() {
-    this.initRemote();
+    console.log('result screen init')
+    // this.initRemote();
+    this.localStorageService.registerMessageCallback(this.receiveMessage.bind(this));
+  }
+
+
+  receiveMessage(message: LocalStorageMessage) {
+    switch (message.type) {
+      case 'draw-sent': {
+        console.log('images have been sent');
+        this.isImagesSent = true;
+        break;
+      }
+      case 'draw-image': {
+        console.log('incoming results')
+        this.createImageCollection(message.data);
+        break;
+      }
+    }
   }
 
   initRemote() {
@@ -28,6 +50,7 @@ export class ImageResultsScreenComponent implements OnInit {
     if (newImage !== null && newImage.hasOwnProperty('imageResult') &&
       newImage.hasOwnProperty('cropTime') && newImage['cropTime'].endsWith('-1')) {
       console.log('image received');
+      this.isImagesSent = false;
 
       if (newImage['imageResult'].indexOf('base64') === -1) {
         newImage['image'] = 'data:image/gif;base64,' + newImage['imageResult'];
@@ -55,6 +78,9 @@ export class ImageResultsScreenComponent implements OnInit {
       } else {
         this.imageResult.push(newImage);
       }
+    } else if (newImage !== null && newImage.hasOwnProperty('image') ) {
+      console.log('images have been sent');
+      this.isImagesSent = true;
     }
   }
 }

@@ -1,3 +1,12 @@
-<div class=" infoscreen">
-  <app-image-results [resultImages]="imageResult"></app-image-results>
+<div class="infoscreen">
+  <div class="row">
+    <div class="col-12">
+      <app-image-results [resultImages]="imageResult"></app-image-results>
+    </div>
+  </div>
+  <div class="row justify-content-center" style="margin-top: 50px">
+    <div class="col-9">
+      <div class="process_msg" *ngIf="isImagesSent">Images are currently processed</div>
+    </div>
+  </div>
 </div>
