@@ -29,7 +29,7 @@
     "core-js": "^2.5.7",
     "hammerjs": "^2.0.8",
     "highcharts": "^6.0.4",
-    "jquery": "^1.9.1",
+    "jquery": "^3.5.0",
     "ngx-drag-scroll": "^2.0.4",
     "ol": "^5.0.3",
     "osmbuildings": "^0.2.0-b",
