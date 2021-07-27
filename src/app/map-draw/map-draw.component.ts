@@ -114,7 +114,7 @@ export class MapDrawComponent implements OnInit {
       this.areaSumMap[category] = 0;
     }
     this.initMap();
-    this.initRemoteResultListener();
+    //this.initRemoteResultListener();
   }
 
   initMap() {
@@ -152,10 +152,10 @@ export class MapDrawComponent implements OnInit {
       view: this.mapView
     });
 
-    this.map.on('pointerdrag', this.mapMoveEndHandler);
+/*    this.map.on('pointerdrag', this.mapMoveEndHandler);
 
     this.selectedInteraction = 'Draw';
-    this.addDrawInteraction();
+    this.addDrawInteraction();*/
   }
 
   mapMoveEndHandler = (evt) => {
