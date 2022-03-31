@@ -5,8 +5,7 @@ On the Touchscreen an Openlayers based sketching tool enables planners to genera
 This data is further displayed and analysed and thos results are displayed on the Infoscreen.
 Further branches of this project have connectors to Unity to display the GeoJson in an AR context .. mor information will follow.
 
-
-## ![](https://user-images.githubusercontent.com/36763878/55071265-6ca46c00-5088-11e9-8abb-e13690288a63.gif)
+https://user-images.githubusercontent.com/36763878/161041509-d3efdf9e-1fc8-42ad-a3d6-fa556901e3db.mp4
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.2.
 
